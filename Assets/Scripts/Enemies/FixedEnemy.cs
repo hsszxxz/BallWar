@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class FixedEnemy : Enemy
+namespace EnemySpace
 {
-    public override void EnemyDie()
+    public class FixedEnemy : Enemy
     {
-        GameObjectPool.Instance.CollectObject(gameObject);
-    }
+        private void Start()
+        {
+            type = EnemyType.Fixed;
+        }
+        public override void EnemyDie()
+        {
+            GameObjectPool.Instance.CollectObject(gameObject);
+            EnemyControl.Instance.enemyDictionary[type].Remove(transform);
+        }
 
-    public override void GoReset() {}
+        public override void GoReset() { }
+    }
 }

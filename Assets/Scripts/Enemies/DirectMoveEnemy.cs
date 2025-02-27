@@ -1,46 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class DirectMoveEnemy : Enemy
+namespace EnemySpace
 {
-    public float HalfMaxMoveDistance;
-    private int isHorizontal;
-    public EnemyMotor motor;
-    private Vector2 target;
-    private int face;
-    private void Start()
+    public class DirectMoveEnemy : Enemy
     {
-        isHorizontal = Random.Range(0,2);
-        motor.EnemyMotorInit(transform);
-        target = transform.position + new Vector3(isHorizontal * HalfMaxMoveDistance, (1 - isHorizontal) * HalfMaxMoveDistance, 0);
-        face = 1;
-    }
-    public override void EnemyDie()
-    {
-        GameObjectPool.Instance.CollectObject(gameObject);
-    }
-
-    public override void GoReset()
-    {
-        isHorizontal = Random.Range(0, 2);
-        target = transform.position + new Vector3(isHorizontal * HalfMaxMoveDistance, (1 - isHorizontal) * HalfMaxMoveDistance, 0);
-        face = 1;
-    }
-    private void TurnDirection()
-    {
-        target -= face * 2 * new Vector2(isHorizontal * HalfMaxMoveDistance, (1 - isHorizontal) * HalfMaxMoveDistance);
-        face = -face;
-    }
-    private void DirectMove()
-    {
-        if(motor.MoveTowards(target) || BasicInformation.Instance.isOutMap(transform.position))
+        public float HalfMaxMoveDistance;
+        private int isHorizontal;
+        public EnemyMotor motor;
+        private Vector2 target;
+        private int face;
+        private void Start()
         {
-            TurnDirection();
+            type = EnemyType.DirectMove;
+            isHorizontal = Random.Range(0, 2);
+            motor.EnemyMotorInit(transform);
+            target = transform.position + new Vector3(isHorizontal * HalfMaxMoveDistance, (1 - isHorizontal) * HalfMaxMoveDistance, 0);
+            face = 1;
         }
-    }
-    private void Update()
-    {
-        DirectMove();
+        public override void EnemyDie()
+        {
+            GameObjectPool.Instance.CollectObject(gameObject);
+            EnemyControl.Instance.enemyDictionary[type].Remove(transform);
+        }
+
+        public override void GoReset()
+        {
+            isHorizontal = Random.Range(0, 2);
+            target = transform.position + new Vector3(isHorizontal * HalfMaxMoveDistance, (1 - isHorizontal) * HalfMaxMoveDistance, 0);
+            face = 1;
+        }
+        private void TurnDirection()
+        {
+            target -= face * 2 * new Vector2(isHorizontal * HalfMaxMoveDistance, (1 - isHorizontal) * HalfMaxMoveDistance);
+            face = -face;
+        }
+        private void DirectMove()
+        {
+            if (motor.MoveTowards(target) || BasicInformation.Instance.isOutMap(transform.position))
+            {
+                TurnDirection();
+            }
+        }
+        private void Update()
+        {
+            DirectMove();
+        }
     }
 }

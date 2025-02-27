@@ -2,26 +2,29 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[Serializable]
-public class EnemyMotor
+namespace EnemySpace
 {
-    public float moveSpeed;
-    private Transform enemy;
-    public void EnemyMotorInit(Transform Enmey)
+    [Serializable]
+    public class EnemyMotor
     {
-        enemy = Enmey;
-    }
-    public bool MoveTowards( Vector2 target)
-    {
-        if(Vector2.Distance(enemy.position,target)> 0.1f)
+        public float moveSpeed;
+        private Transform enemy;
+        public void EnemyMotorInit(Transform Enmey)
         {
-            Vector2 dir = new Vector2(target.x-enemy.position.x,target.y- enemy.position.y).normalized;
-            enemy.Translate(dir*moveSpeed*Time.deltaTime);
-            return false;
+            enemy = Enmey;
         }
-        else
+        public bool MoveTowards(Vector2 target)
         {
-            return true;
+            if (Vector2.Distance(enemy.position, target) > 0.1f)
+            {
+                Vector2 dir = new Vector2(target.x - enemy.position.x, target.y - enemy.position.y).normalized;
+                enemy.Translate(dir * moveSpeed * Time.deltaTime);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

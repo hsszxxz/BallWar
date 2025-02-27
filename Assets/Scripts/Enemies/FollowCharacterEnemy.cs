@@ -1,29 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class FollowCharacterEnemy : Enemy
+namespace EnemySpace
 {
-    public EnemyMotor motor;
-    private void Start()
+    public class FollowCharacterEnemy : Enemy
     {
-        motor.EnemyMotorInit(transform);
-    }
-    public override void EnemyDie()
-    {
-        GameObjectPool.Instance.CollectObject(gameObject);
-    }
+        public EnemyMotor motor;
+        private void Start()
+        {
+            motor.EnemyMotorInit(transform);
+            type = EnemyType.FollowCharacter;
+        }
+        public override void EnemyDie()
+        {
+            GameObjectPool.Instance.CollectObject(gameObject);
+            EnemyControl.Instance.enemyDictionary[type].Remove(transform);
+        }
 
-    public override void GoReset()
-    {
-        throw new System.NotImplementedException();
-    }
-    private void FollowCharacter()
-    {
-        motor.MoveTowards(BasicInformation.Instance.Character.position);
-    }
-    private void Update()
-    {
-        FollowCharacter();
+        public override void GoReset()
+        {
+            throw new System.NotImplementedException();
+        }
+        private void FollowCharacter()
+        {
+            motor.MoveTowards(BasicInformation.Instance.Character.position);
+        }
+        private void Update()
+        {
+            FollowCharacter();
+        }
     }
 }
