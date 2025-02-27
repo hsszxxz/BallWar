@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 namespace EnemySpace
 {
     public class FixedEnemy : Enemy
@@ -8,13 +9,14 @@ namespace EnemySpace
         private void Start()
         {
             type = EnemyType.Fixed;
+            EnemyDie();
         }
         public override void EnemyDie()
         {
-            GameObjectPool.Instance.CollectObject(gameObject);
+            explosionEffect.Play();
+            GameObjectPool.Instance.CollectObject(gameObject,explosionEffect.main.duration);
             EnemyControl.Instance.enemyDictionary[type].Remove(transform);
         }
-
         public override void GoReset() { }
     }
 }

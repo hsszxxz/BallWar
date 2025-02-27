@@ -32,6 +32,15 @@ public class GameObjectPool : MonoSingleton<GameObjectPool>
     {
         go.SetActive(false);
     }
+    public void CollectObject(GameObject go,float delay)
+    {
+        StartCoroutine(DelayCollectObject(go,delay));
+    }
+    IEnumerator DelayCollectObject(GameObject go,float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        go.SetActive(false);
+    }
     //清空
     //一般清空是倒着清空
     public void Clear(string key)

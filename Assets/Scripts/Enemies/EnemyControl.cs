@@ -39,6 +39,7 @@ namespace EnemySpace
         {
             Vector2 pos = Vector2.Lerp(BasicInformation.Instance.WholeMapMinPoint.position, BasicInformation.Instance.WholeMapMaxPoint.position, Random.value);
             Transform item = GameObjectPool.Instance.CreateObject(type.ToString(), Resources.Load(enemyPrefabPath[type]) as GameObject, pos, Quaternion.identity).transform;
+            item.SetParent(transform);
             enemyDictionary[type].Add(item);
         }
     }

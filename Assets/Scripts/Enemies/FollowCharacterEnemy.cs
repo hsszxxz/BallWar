@@ -13,13 +13,14 @@ namespace EnemySpace
         }
         public override void EnemyDie()
         {
-            GameObjectPool.Instance.CollectObject(gameObject);
+            explosionEffect.Play();
+            GameObjectPool.Instance.CollectObject(gameObject, explosionEffect.main.duration);
             EnemyControl.Instance.enemyDictionary[type].Remove(transform);
         }
 
         public override void GoReset()
         {
-            throw new System.NotImplementedException();
+            ;
         }
         private void FollowCharacter()
         {
