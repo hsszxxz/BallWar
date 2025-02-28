@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using EnemySpace;
+using ScoreSpace;
 
 public class PlayerCtrl : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class PlayerCtrl : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.TryGetComponent<Enemy>(out var enemy))
+        if (other.TryGetComponent<Enemy>(out var enemy))
         {
             CalulateScore(enemy);
         }
@@ -91,7 +92,7 @@ public class PlayerCtrl : MonoBehaviour
         if (isFly)
         {
             enemy.EnemyDie();
-            //Score Add
+            ScoreControl.Instance.PlusScore(times*2);
         }
 
         //GAME OVER

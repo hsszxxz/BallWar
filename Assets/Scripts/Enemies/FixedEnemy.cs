@@ -9,7 +9,6 @@ namespace EnemySpace
         private void Start()
         {
             type = EnemyType.Fixed;
-            EnemyDie();
         }
         public override void EnemyDie()
         {
