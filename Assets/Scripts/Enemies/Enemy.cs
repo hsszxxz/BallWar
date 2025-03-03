@@ -7,6 +7,7 @@ namespace EnemySpace
     {
         [HideInInspector]
         public EnemyType type;
+        protected string deathEffectionPath = "Prefab/DeathEffection";
         public abstract void GoReset();
         public abstract void EnemyDie();
     }

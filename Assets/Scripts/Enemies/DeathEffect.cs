@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class DeathEffect : MonoBehaviour
 {
-    public ParticleSystem explosionEffect;
+    private ParticleSystem explosionEffect;
     private Animator animator;
     void Start()
     {
-        animator = GetComponent<Animator>();
-        BeginToDeath();
+        explosionEffect = GetComponentInChildren<ParticleSystem>();
+        animator = GetComponentInChildren<Animator>();
     }
     public void BeginToDeath()
     {
         animator.SetBool("Dead", true);
         explosionEffect.Play();
-        Destroy(gameObject, explosionEffect.duration);
+        GameObjectPool.Instance.CollectObject(gameObject, explosionEffect.main.duration);
     }
 }
