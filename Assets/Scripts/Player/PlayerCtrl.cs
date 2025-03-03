@@ -16,7 +16,9 @@ public class PlayerCtrl : MonoBehaviour
     [Tooltip("现在半径")] public float currentRadius = 1f;
     [Tooltip("默认半径")] public float defaultRadius = 1f;
     [Tooltip("最大半径")] public float maxRadius = 5f;
-    [Tooltip("半径增加速度")] public float radiusAddSpeed = 0.5f;
+    [Tooltip("当前蓄力时间")] public float holdTime = 0f;
+    [Tooltip("最大蓄力时间")] public float maxHoldTime = 4f;
+    [Tooltip("时间-半径曲线")] public AnimationCurve radiusAddSpeedCurve;
     [Tooltip("半径增加间隔时间")] public float radiusAddPerTimes = 0.1f;
 
     [Header("移动")]
@@ -26,6 +28,7 @@ public class PlayerCtrl : MonoBehaviour
 
     [Header("增益")]
     public int times = 1;
+    public float hitRadius = 3;
 
     void Start()
     {
@@ -66,16 +69,25 @@ public class PlayerCtrl : MonoBehaviour
     {
         while(buttonHold) 
         {
-            if (currentRadius < maxRadius)
-                currentRadius += radiusAddSpeed;
+            if (currentRadius < maxRadius && holdTime < maxHoldTime)
+            {
+                //currentRadius += radiusAddSpeed;
+                holdTime += Time.deltaTime;
+                currentRadius = radiusAddSpeedCurve.Evaluate(holdTime / maxHoldTime) * maxRadius + defaultRadius;
+                if (currentRadius >= hitRadius)
+                    CameraShake.Instance.TriggerShake();
+            }
             else
+            {
                 currentRadius = maxRadius;
-
+                holdTime = maxHoldTime;
+            }
             yield return new WaitForSeconds(radiusAddPerTimes);
         }
 
         isFly = true;
         var targetPos = target.position;
+        holdTime = 0;
         target.DOMove(targetPos, moveTime).SetEase(ease);
         transform.DOMove(targetPos, moveTime).SetEase(ease).OnComplete(() =>
         {
@@ -89,10 +101,12 @@ public class PlayerCtrl : MonoBehaviour
 
     private void CalulateScore(Enemy enemy)
     {
-        if (isFly)
+        if (isFly && currentRadius >= hitRadius)
         {
             enemy.EnemyDie();
+            CameraShake.Instance.TriggerShake(0.3f);
             ScoreControl.Instance.PlusScore(times*2);
+            times++;
         }
 
         //GAME OVER
