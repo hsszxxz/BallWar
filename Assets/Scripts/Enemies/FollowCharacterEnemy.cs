@@ -13,8 +13,7 @@ namespace EnemySpace
         }
         public override void EnemyDie()
         {
-            explosionEffect.Play();
-            GameObjectPool.Instance.CollectObject(gameObject, explosionEffect.main.duration);
+            GameObjectPool.Instance.CollectObject(gameObject);
             EnemyControl.Instance.enemyDictionary[type].Remove(transform);
         }
 
