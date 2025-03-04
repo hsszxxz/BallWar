@@ -29,11 +29,19 @@ public class PlayerCtrl : MonoBehaviour
     [Header("增益")]
     public int times = 1;
     public float hitRadius = 3;
+    public float boundForce = 3f;
 
-    void Start()
-    {
+    [Tooltip("左下点")] public Transform LD;
+    [Tooltip("右上点")] public Transform RU;
 
-    }
+
+    [Header("Debug")]
+    public Vector2 BoundDir;
+    public Vector2 start;
+    public Vector2 end;
+    public Vector2 boundPoint;
+
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -46,9 +54,12 @@ public class PlayerCtrl : MonoBehaviour
 
     void Update()
     {
-        buttonHold = Input.GetKey(KeyCode.Space);
+        if(!isFly) 
+            buttonHold = Input.GetKey(KeyCode.Space);
+
         KeyControl();
-        TargetRotate();
+        //if(!isFly)
+            TargetRotate();
     }
 
     private void KeyControl()
@@ -60,9 +71,11 @@ public class PlayerCtrl : MonoBehaviour
 
     private void TargetRotate()
     {
-        target.localPosition = new Vector3(0, currentRadius, 0);
-        Quaternion targetRotation = Quaternion.Euler(0, 0, rotateSpeed * Time.time);
-        transform.rotation = targetRotation;
+        if (!WallCheck())
+            target.localPosition = new Vector3(0, currentRadius, 0);
+
+        Quaternion playerRotation = Quaternion.Euler(0, 0, rotateSpeed * Time.time);
+        transform.rotation = playerRotation;
     }
 
     private IEnumerator RadiusAdd()
@@ -71,7 +84,6 @@ public class PlayerCtrl : MonoBehaviour
         {
             if (currentRadius < maxRadius && holdTime < maxHoldTime)
             {
-                //currentRadius += radiusAddSpeed;
                 holdTime += Time.deltaTime;
                 currentRadius = radiusAddSpeedCurve.Evaluate(holdTime / maxHoldTime) * maxRadius + defaultRadius;
                 if (currentRadius >= hitRadius)
@@ -85,18 +97,86 @@ public class PlayerCtrl : MonoBehaviour
             yield return new WaitForSeconds(radiusAddPerTimes);
         }
 
+        Move();
+        StopAllCoroutines();
+    }
+
+    private void Move()
+    {
         isFly = true;
         var targetPos = target.position;
         holdTime = 0;
+
+        float distance = Vector2.Distance(transform.position, target.position);
+        start = transform.position;
+
         target.DOMove(targetPos, moveTime).SetEase(ease);
         transform.DOMove(targetPos, moveTime).SetEase(ease).OnComplete(() =>
         {
-            currentRadius = defaultRadius; 
-            isFly = false;
-            times = 1;
-        });
+            if (currentRadius >= distance)
+                ReBound();
 
-        StopAllCoroutines();
+            currentRadius = defaultRadius;
+            times = 1;
+            isFly = false;
+        });
+    }
+
+    private bool WallCheck()
+    {
+        Vector3 p = target.position;
+        float l = LD.position.x;
+        float d = LD.position.y;
+        float r = RU.position.x;
+        float u = RU.position.y;
+
+        if (p.x > l && p.y > d && p.x < r && p.y < u) 
+            return false;
+
+        //竖直
+        if (p.x <= l || p.x >= r)
+            target.position = p.x >= r ? FindIntersection(new Vector2(r, d), RU.position) : FindIntersection(LD.position, new Vector2(l, u));
+        //水平
+        if (p.y <= d || p.y >= u)
+            target.position = p.y >= u ? FindIntersection(new Vector2(l, u), RU.position) : FindIntersection(LD.position, new Vector2(r, d));
+        return true;
+    }
+
+    public Vector3 FindIntersection(Vector3 b1, Vector3 b2)
+    {
+        Vector3 dirA = target.position - transform.position;
+        Vector3 dirB = b2 - b1;
+        float denominator = dirA.x * dirB.y - dirA.y * dirB.x;
+        Vector3 offset = b1 - transform.position;
+        float t = (offset.x * dirB.y - offset.y * dirB.x) / denominator;
+        return transform.position + t * dirA;
+    }
+
+    private void ReBound()
+    {
+        Vector2 dir = (transform.position - target.position).normalized;
+        Vector2 normal;
+
+        float epsilon = 0.01f;
+        if (Mathf.Abs(target.position.x - LD.position.x) < epsilon)
+            normal = Vector2.right;
+        else if (Mathf.Abs(target.position.x - RU.position.x) < epsilon)
+            normal = Vector2.left;
+        else if (Mathf.Abs(target.position.y - LD.position.y) < epsilon)
+            normal = Vector2.up;
+        else if (Mathf.Abs(target.position.y - RU.position.y) < epsilon)
+            normal = Vector2.down;
+        else
+            return;
+
+        Vector2 boundDir = Vector2.Reflect(dir, normal).normalized;
+        Debug.Log("法线："+normal);
+        Debug.Log("入射角："+dir);
+        boundPoint = target.position;
+        BoundDir = boundDir;
+        Debug.Log("反射角："+BoundDir);
+        transform.DOMove(new Vector2(target.position.x, target.position.y) + boundDir * boundForce, moveTime).SetEase(Ease.OutQuint);
+        end = transform.position;
     }
 
     private void CalulateScore(Enemy enemy)
@@ -105,10 +185,18 @@ public class PlayerCtrl : MonoBehaviour
         {
             enemy.EnemyDie();
             CameraShake.Instance.TriggerShake(0.3f);
-            ScoreControl.Instance.PlusScore(times*2);
+            ScoreControl.Instance.PlusScore(times * 2);
             times++;
         }
 
         //GAME OVER
+    }
+
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(start, boundPoint);
+        Gizmos.DrawLine(end,boundPoint);
     }
 }
