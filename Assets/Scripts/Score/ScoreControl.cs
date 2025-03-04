@@ -8,6 +8,7 @@ namespace ScoreSpace
         [HideInInspector]
         public int Scores;
         private string scorePrefabPath = "Prafab/Score";
+        private string multPrefabPath = "Prefab/Mult";
         public override void Init()
         {
             base.Init();
@@ -20,6 +21,14 @@ namespace ScoreSpace
         }
         public void PlusScore(int num)
         {
+            Scores += num;
+        }
+        public void PlusScore(int num,Vector3 pos)
+        {
+            if (num >=1)
+            {
+                GameObjectPool.Instance.CreateObject("mult", Resources.Load(multPrefabPath) as GameObject, pos, Quaternion.identity).GetComponentInChildren<MultItem>().ShowMult(num);
+            }
             Scores += num;
         }
         public void MinusScore(int num)
