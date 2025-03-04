@@ -117,6 +117,7 @@ public class PlayerCtrl : MonoBehaviour
                 ReBound();
 
             currentRadius = defaultRadius;
+            ScoreControl.Instance.PlusScore(times-1, transform.position, 1.8f);
             times = 1;
             isFly = false;
         });
@@ -185,7 +186,7 @@ public class PlayerCtrl : MonoBehaviour
         {
             enemy.EnemyDie();
             CameraShake.Instance.TriggerShake(0.3f);
-            ScoreControl.Instance.PlusScore(times * 2);
+            //ScoreControl.Instance.PlusScore(times,transform.position,1.8f);
             times++;
         }
 

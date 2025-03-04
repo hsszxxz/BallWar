@@ -19,7 +19,6 @@ public class UIControl : MonoSingleton<UIControl>
         scorePlusAnimator = scorePlusGo.GetComponent<Animator>();
         scoreText = scoreGo.GetComponent<Text>();
         scorePlusText = scorePlusGo.GetComponent<Text>();
-        ScoreControl.Instance.PlusScore(3,Vector3.zero,0.5f);
     }
     private IEnumerator PrintScore(float singleWordLastTime)
     {

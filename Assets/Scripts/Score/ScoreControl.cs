@@ -25,7 +25,7 @@ namespace ScoreSpace
         }
         public void PlusScore(int num,Vector3 pos,float lastTime)
         {
-            if (num >=1)
+            if (num >1)
             {
                 MultItem mult = GameObjectPool.Instance.CreateObject("mult", Resources.Load(multPrefabPath) as GameObject, pos, Quaternion.identity).GetComponentInChildren<MultItem>();
                 mult.ShowMult(num);
