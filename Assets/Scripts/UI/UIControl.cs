@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using ScoreSpace;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,8 +44,11 @@ public class UIControl : MonoSingleton<UIControl>
     }
     public void UIScorePlus(int num)
     {
-        scorePlusText.text ="+"+ num.ToString();
-        scorePlusAnimator.SetBool("plus", true);
-        StartCoroutine(PrintScore(0.1f));
+        if (num != 0)
+        {
+            scorePlusText.text = "+" + num.ToString();
+            scorePlusAnimator.SetBool("plus", true);
+            StartCoroutine(PrintScore(0.1f));
+        }
     }
 }
