@@ -23,13 +23,16 @@ namespace ScoreSpace
         {
             Scores += num;
         }
-        public void PlusScore(int num,Vector3 pos)
+        public void PlusScore(int num,Vector3 pos,float lastTime)
         {
             if (num >=1)
             {
-                GameObjectPool.Instance.CreateObject("mult", Resources.Load(multPrefabPath) as GameObject, pos, Quaternion.identity).GetComponentInChildren<MultItem>().ShowMult(num);
+                MultItem mult = GameObjectPool.Instance.CreateObject("mult", Resources.Load(multPrefabPath) as GameObject, pos, Quaternion.identity).GetComponentInChildren<MultItem>();
+                mult.ShowMult(num);
+                mult.ShutMult(lastTime);
             }
-            Scores += num;
+            Scores += num*num;
+            UIControl.Instance.UIScorePlus(num*num);
         }
         public void MinusScore(int num)
         {

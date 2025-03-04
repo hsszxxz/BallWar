@@ -12,7 +12,11 @@ public class MultItem : MonoBehaviour
         text.text = "¡Á" + num;
         animator.SetBool("show", true);
     }
-    private void Start()
+    public void ShutMult(float lastTime)
+    {
+        GameObjectPool.Instance.CollectObject(gameObject,lastTime);
+    }
+    private void Awake()
     {
         text = GetComponent<Text>();
         animator = GetComponent<Animator>();
