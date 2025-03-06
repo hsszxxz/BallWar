@@ -7,7 +7,7 @@ namespace ScoreSpace
     {
         [HideInInspector]
         public int Scores;
-        private string scorePrefabPath = "Prafab/Score";
+        private string scorePrefabPath = "Prefab/Score";
         private string multPrefabPath = "Prefab/Mult";
         public override void Init()
         {
@@ -16,12 +16,16 @@ namespace ScoreSpace
         }
         public void RandomGenerateScoreItems(int num)
         {
-            Vector2 pos = Vector2.Lerp(BasicInformation.Instance.WholeMapMinPoint.position, BasicInformation.Instance.WholeMapMaxPoint.position, Random.value);
-            Transform item = GameObjectPool.Instance.CreateObject("score", Resources.Load(scorePrefabPath) as GameObject, pos, Quaternion.identity).transform;
+            for (int i = 0; i < num; i++)
+            {
+                Vector2 pos = Vector2.Lerp(BasicInformation.Instance.WholeMapMinPoint.position, BasicInformation.Instance.WholeMapMaxPoint.position, Random.value);
+                Transform item = GameObjectPool.Instance.CreateObject("score", Resources.Load(scorePrefabPath) as GameObject, pos, Quaternion.identity).transform;
+            }
         }
         public void PlusScore(int num)
         {
             Scores += num;
+            UIControl.Instance.UIScorePlus(num);
         }
         public void PlusScore(int num,Vector3 pos,float lastTime)
         {

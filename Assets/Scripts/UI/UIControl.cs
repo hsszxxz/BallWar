@@ -10,16 +10,22 @@ using UnityEngine.UIElements;
 
 public class UIControl : MonoSingleton<UIControl>
 {
+    public GameObject levelNum;
     public GameObject scoreGo;
     public GameObject scorePlusGo;
     private Text scoreText;
     private Text scorePlusText;
+    private Text levelNumText;
     private Animator scorePlusAnimator;
-    private void Start()
+    private Animator levelNumAnimator;
+    private string[] bigWriteNum = new string[10] { "十", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
+    private void Awake()
     {
+        levelNumAnimator = levelNum.GetComponent<Animator>();
         scorePlusAnimator = scorePlusGo.GetComponent<Animator>();
         scoreText = scoreGo.GetComponent<Text>();
         scorePlusText = scorePlusGo.GetComponent<Text>();
+        levelNumText = levelNum.GetComponent<Text>();
     }
     private IEnumerator PrintScore(float singleWordLastTime)
     {
@@ -50,5 +56,36 @@ public class UIControl : MonoSingleton<UIControl>
             scorePlusAnimator.SetBool("plus", true);
             StartCoroutine(PrintScore(0.1f));
         }
+    }
+    public void LevelFade()
+    {
+        levelNumAnimator.SetBool("showNum", false);
+    }
+    public void LevelShow(int level)
+    {
+        string FinalStr = null;
+        if (level < 10)
+        {
+            FinalStr = bigWriteNum[level];
+        }
+        else if (level < 20)
+        {
+            FinalStr = bigWriteNum[0];
+            if (level != 10)
+            {
+                FinalStr += bigWriteNum[level - 10];
+            }
+        }
+        else if (level<100)
+        {
+            FinalStr = bigWriteNum[(int)(level / 10)];
+            FinalStr += bigWriteNum[0];
+            if (level%10!=0)
+            {
+                FinalStr += bigWriteNum[level % 10];
+            }
+        }
+        levelNumAnimator.SetBool("showNum", true);
+        levelNumText.text = "第" + FinalStr + "关";
     }
 }

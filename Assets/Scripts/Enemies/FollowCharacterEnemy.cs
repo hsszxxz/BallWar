@@ -15,7 +15,7 @@ namespace EnemySpace
         {
             GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load(deathEffectionPath) as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
             GameObjectPool.Instance.CollectObject(gameObject);
-            EnemyControl.Instance.enemyDictionary[type].Remove(transform);
+            EnemyControl.Instance.MinusEnemyFromDictionary(transform);
         }
 
         public override void GoReset()

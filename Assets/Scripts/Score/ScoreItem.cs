@@ -5,12 +5,10 @@ namespace ScoreSpace
 {
     public class ScoreItem : MonoBehaviour
     {
-        private void OnCollisionEnter2D(Collision2D collision)
+        public void CollectScore()
         {
-            if (collision == BasicInformation.Instance.Character.GetComponent<Collision2D>())
-            {
-                ScoreControl.Instance.PlusScore(1);
-            }
+            ScoreControl.Instance.PlusScore(1);
+            GameObjectPool.Instance.CollectObject(gameObject);
         }
     }
 }

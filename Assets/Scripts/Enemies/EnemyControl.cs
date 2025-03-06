@@ -16,9 +16,9 @@ namespace EnemySpace
         public Dictionary <EnemyType, List<Transform>> enemyDictionary = new Dictionary<EnemyType, List<Transform>>();
         private Dictionary<EnemyType, string> enemyPrefabPath = new Dictionary<EnemyType, string>()
         {
-            {EnemyType.Fixed,"Prafab/FixedEnemy" },
-            {EnemyType.FollowCharacter,"Prafab/FollowCharacterEnemy" },
-            {EnemyType.DirectMove,"Prafab/DirectMove" }
+            {EnemyType.Fixed,"Prefab/FixedEnemy" },
+            {EnemyType.FollowCharacter,"Prefab/FollowCharacterEnemy" },
+            {EnemyType.DirectMove,"Prefab/DirectMoveEnemy" }
         };
         public override void Init()
         {
@@ -35,12 +35,41 @@ namespace EnemySpace
                 }
             }
         }
-        public void GenerateOneEnemy(EnemyType type)
+        //ø’‘Ú∑µªÿtrue
+        private bool DetectDictionaryIsEmpty()
+        {
+            bool flag = true;
+            foreach (List<Transform> enemies in enemyDictionary.Values)
+            {
+                if (enemies.Count > 0) { flag = false; }
+            }
+            return flag;
+        }
+        public void MinusEnemyFromDictionary(Transform enemy)
+        {
+            Enemy enemyScript = enemy.GetComponent<Enemy>();
+            if (enemyScript!=null)
+            {
+                enemyDictionary[enemyScript.type].Remove(enemy);
+                if(DetectDictionaryIsEmpty())
+                {
+                    LevelsControl.Instance.levelIndex += 1;
+                }
+            }
+        }
+        public Transform GenerateOneEnemy(EnemyType type)
         {
             Vector2 pos = Vector2.Lerp(BasicInformation.Instance.WholeMapMinPoint.position, BasicInformation.Instance.WholeMapMaxPoint.position, Random.value);
             Transform item = GameObjectPool.Instance.CreateObject(type.ToString(), Resources.Load(enemyPrefabPath[type]) as GameObject, pos, Quaternion.identity).transform;
             item.SetParent(transform);
             enemyDictionary[type].Add(item);
+            return item;
+        }
+        public Transform GenerateOneRandomEnemy()
+        {
+            EnemyType[] types = (EnemyType[])System.Enum.GetValues(typeof(EnemyType));
+            EnemyType random = types[Random.Range(0, types.Length)];
+            return GenerateOneEnemy(random);
         }
     }
 }
