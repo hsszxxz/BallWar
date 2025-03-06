@@ -40,6 +40,7 @@ public class PlayerCtrl : MonoBehaviour
     public Vector2 start;
     public Vector2 end;
     public Vector2 boundPoint;
+    public Vector2 AAA;
 
 
 
@@ -58,8 +59,7 @@ public class PlayerCtrl : MonoBehaviour
             buttonHold = Input.GetKey(KeyCode.Space);
 
         KeyControl();
-        //if(!isFly)
-            TargetRotate();
+        TargetRotate();
     }
 
     private void KeyControl()
@@ -113,7 +113,8 @@ public class PlayerCtrl : MonoBehaviour
         target.DOMove(targetPos, moveTime).SetEase(ease);
         transform.DOMove(targetPos, moveTime).SetEase(ease).OnComplete(() =>
         {
-            if (currentRadius >= distance)
+            Debug.Log(currentRadius > distance);
+            if (currentRadius > distance)
                 ReBound();
 
             currentRadius = defaultRadius;
@@ -125,13 +126,14 @@ public class PlayerCtrl : MonoBehaviour
 
     private bool WallCheck()
     {
-        Vector3 p = target.position;
+        Vector3 p = transform.position + (target.position - transform.position).normalized * currentRadius;
+        AAA = p;
         float l = LD.position.x;
         float d = LD.position.y;
         float r = RU.position.x;
         float u = RU.position.y;
 
-        if (p.x > l && p.y > d && p.x < r && p.y < u) 
+        if (p.x > l && p.y > d && p.x < r && p.y < u && target.position != Vector3.zero) 
             return false;
 
         //ÊúÖ±
@@ -158,7 +160,7 @@ public class PlayerCtrl : MonoBehaviour
         Vector2 dir = (transform.position - target.position).normalized;
         Vector2 normal;
 
-        float epsilon = 0.01f;
+        float epsilon = 0.05f;
         if (Mathf.Abs(target.position.x - LD.position.x) < epsilon)
             normal = Vector2.right;
         else if (Mathf.Abs(target.position.x - RU.position.x) < epsilon)
@@ -199,5 +201,6 @@ public class PlayerCtrl : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(start, boundPoint);
         Gizmos.DrawLine(end,boundPoint);
+        Gizmos.DrawSphere(AAA, .3f);
     }
 }
