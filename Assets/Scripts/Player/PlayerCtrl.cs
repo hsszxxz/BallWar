@@ -27,6 +27,7 @@ public class PlayerCtrl : MonoBehaviour
     [Tooltip("移动时间")] public float moveTime = 0.2f;
 
     [Header("增益")]
+    public int health = 3;
     public int times = 1;
     public float hitRadius = 3;
     public float boundForce = 3f;
@@ -51,10 +52,14 @@ public class PlayerCtrl : MonoBehaviour
         {
             CalulateScore(enemy);
         }
-        if(other.TryGetComponent<GameToolItem>(out var shield) /*有其他道具再区分other.gameObject.layer == LayerMask.NameToLayer("Shield")*/)
+        if(other.TryGetComponent<GameToolItem>(out var shield))
         {
             isShield = true;
             shield.CollectTool();
+        } 
+        if(other.TryGetComponent<ScoreItem>(out var candy))
+        {
+            candy.CollectScore();
         }
     }
 
@@ -119,7 +124,6 @@ public class PlayerCtrl : MonoBehaviour
         target.DOMove(targetPos, moveTime).SetEase(ease);
         transform.DOMove(targetPos, moveTime).SetEase(ease).OnComplete(() =>
         {
-            Debug.Log(currentRadius > distance);
             if (currentRadius > distance)
                 ReBound();
 
@@ -168,22 +172,19 @@ public class PlayerCtrl : MonoBehaviour
 
         float epsilon = 0.05f;
         if (Mathf.Abs(target.position.x - LD.position.x) < epsilon)
-            normal = Vector2.right;
-        else if (Mathf.Abs(target.position.x - RU.position.x) < epsilon)
-            normal = Vector2.left;
-        else if (Mathf.Abs(target.position.y - LD.position.y) < epsilon)
             normal = Vector2.up;
-        else if (Mathf.Abs(target.position.y - RU.position.y) < epsilon)
+        else if (Mathf.Abs(target.position.x - RU.position.x) < epsilon)
             normal = Vector2.down;
+        else if (Mathf.Abs(target.position.y - LD.position.y) < epsilon)
+            normal = Vector2.left;
+        else if (Mathf.Abs(target.position.y - RU.position.y) < epsilon)
+            normal = Vector2.right;
         else
             return;
 
         Vector2 boundDir = Vector2.Reflect(dir, normal).normalized;
-        Debug.Log("法线："+normal);
-        Debug.Log("入射角："+dir);
         boundPoint = target.position;
         BoundDir = boundDir;
-        Debug.Log("反射角："+BoundDir);
         transform.DOMove(new Vector2(target.position.x, target.position.y) + boundDir * boundForce, moveTime).SetEase(Ease.OutQuint);
         end = transform.position;
     }
@@ -194,16 +195,20 @@ public class PlayerCtrl : MonoBehaviour
         {
             enemy.EnemyDie();
             CameraShake.Instance.TriggerShake(0.3f);
-            //ScoreControl.Instance.PlusScore(times,transform.position,1.8f);
             times++;
+            return;
         }
         if (isShield)
         {
             isShield = false;
             return;
         }
-        //GAME OVER
 
+        health--;
+        if (health == 0)
+        {
+            //GAME OVER
+        }
     }
 
 

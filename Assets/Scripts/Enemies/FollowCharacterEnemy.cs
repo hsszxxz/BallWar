@@ -9,18 +9,16 @@ namespace EnemySpace
         private void Start()
         {
             motor.EnemyMotorInit(transform);
-            type = EnemyType.FollowCharacter;
         }
         public override void EnemyDie()
         {
+            EnemyControl.Instance.MinusEnemyFromDictionary(transform);
             GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load(deathEffectionPath) as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
             GameObjectPool.Instance.CollectObject(gameObject);
-            EnemyControl.Instance.MinusEnemyFromDictionary(transform);
         }
 
         public override void GoReset()
         {
-            ;
         }
         private void FollowCharacter()
         {

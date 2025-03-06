@@ -43,6 +43,9 @@ namespace EnemySpace
             {
                 if (enemies.Count > 0) { flag = false; }
             }
+            //Debug.Log("Fixed:"+enemyDictionary[EnemyType.Fixed].Count);
+            //Debug.Log("Direct:"+enemyDictionary[EnemyType.DirectMove].Count);
+            //Debug.Log("Follow:" + enemyDictionary[EnemyType.FollowCharacter].Count);
             return flag;
         }
         public void MinusEnemyFromDictionary(Transform enemy)
@@ -51,7 +54,7 @@ namespace EnemySpace
             if (enemyScript!=null)
             {
                 enemyDictionary[enemyScript.type].Remove(enemy);
-                if(DetectDictionaryIsEmpty())
+                if (DetectDictionaryIsEmpty())
                 {
                     LevelsControl.Instance.levelIndex += 1;
                 }

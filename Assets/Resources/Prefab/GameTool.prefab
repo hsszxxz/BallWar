@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8763947024070486906}
   - component: {fileID: 4495315370602826363}
-  - component: {fileID: 3270053712805705131}
   - component: {fileID: 1657119220236842192}
+  - component: {fileID: 3179109177676142466}
   m_Layer: 0
   m_Name: GameTool
   m_TagString: Untagged
@@ -88,18 +88,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3270053712805705131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7978140551043590268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 471685c37ef691f4e857604012dd3ec4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!70 &1657119220236842192
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -137,3 +125,15 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.21133333}
   m_Size: {x: 1, y: 1}
   m_Direction: 0
+--- !u!114 &3179109177676142466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7978140551043590268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 471685c37ef691f4e857604012dd3ec4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -27,6 +27,7 @@ public class LevelsControl : MonoSingleton<LevelsControl>
         }
         set
         {
+            Debug.Log("NO" + levelIndex);
             levelIndexValue = value;
             ShowLevelProcess(value);
         }
@@ -103,6 +104,7 @@ public class LevelsControl : MonoSingleton<LevelsControl>
         }
         if (Vector2.Distance(temp.position,BasicInformation.Instance.Character.position) <=enemyDistanceToCharacter)
         {
+            EnemyControl.Instance.MinusEnemyFromDictionary(temp);
             return GenenrateEnemy(type, isRandom);
         }
         else

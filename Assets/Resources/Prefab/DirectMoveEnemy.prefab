@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08a23b370fff1b247b58325bd5f70856, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 1
   HalfMaxMoveDistance: 5
   motor:
     moveSpeed: 2
