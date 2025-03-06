@@ -30,6 +30,7 @@ public class PlayerCtrl : MonoBehaviour
     public int times = 1;
     public float hitRadius = 3;
     public float boundForce = 3f;
+    public bool isShield;
 
     [Tooltip("左下点")] public Transform LD;
     [Tooltip("右上点")] public Transform RU;
@@ -49,6 +50,11 @@ public class PlayerCtrl : MonoBehaviour
         if (other.TryGetComponent<Enemy>(out var enemy))
         {
             CalulateScore(enemy);
+        }
+        if(other.TryGetComponent<GameToolItem>(out var shield) /*有其他道具再区分other.gameObject.layer == LayerMask.NameToLayer("Shield")*/)
+        {
+            isShield = true;
+            shield.CollectTool();
         }
     }
 
@@ -191,8 +197,13 @@ public class PlayerCtrl : MonoBehaviour
             //ScoreControl.Instance.PlusScore(times,transform.position,1.8f);
             times++;
         }
-
+        if (isShield)
+        {
+            isShield = false;
+            return;
+        }
         //GAME OVER
+
     }
 
 
