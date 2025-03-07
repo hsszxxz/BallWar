@@ -18,7 +18,7 @@ namespace ScoreSpace
         {
             for (int i = 0; i < num; i++)
             {
-                Vector2 pos = Vector2.Lerp(BasicInformation.Instance.WholeMapMinPoint.position, BasicInformation.Instance.WholeMapMaxPoint.position, Random.value);
+                Vector2 pos = new Vector2(Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.x, BasicInformation.Instance.WholeMapMaxPoint.position.x), Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.y, BasicInformation.Instance.WholeMapMaxPoint.position.y));
                 Transform item = GameObjectPool.Instance.CreateObject("score", Resources.Load(scorePrefabPath) as GameObject, pos, Quaternion.identity).transform;
             }
         }

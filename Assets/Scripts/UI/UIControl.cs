@@ -41,6 +41,7 @@ public class UIControl : MonoSingleton<UIControl>
             yield return new WaitForSeconds(singleWordLastTime/2);
         }
         yield return new WaitForSeconds(singleWordLastTime*2);
+        scoreText.text = null;
         foreach (char c in newScore)
         {
             scoreText.text += c;

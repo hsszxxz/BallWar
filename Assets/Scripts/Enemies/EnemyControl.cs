@@ -48,13 +48,13 @@ namespace EnemySpace
             //Debug.Log("Follow:" + enemyDictionary[EnemyType.FollowCharacter].Count);
             return flag;
         }
-        public void MinusEnemyFromDictionary(Transform enemy)
+        public void MinusEnemyFromDictionary(Transform enemy,bool isChargeEmpty = true)
         {
             Enemy enemyScript = enemy.GetComponent<Enemy>();
             if (enemyScript!=null)
             {
                 enemyDictionary[enemyScript.type].Remove(enemy);
-                if (DetectDictionaryIsEmpty())
+                if (isChargeEmpty && DetectDictionaryIsEmpty())
                 {
                     LevelsControl.Instance.levelIndex += 1;
                 }
@@ -62,7 +62,7 @@ namespace EnemySpace
         }
         public Transform GenerateOneEnemy(EnemyType type)
         {
-            Vector2 pos = Vector2.Lerp(BasicInformation.Instance.WholeMapMinPoint.position, BasicInformation.Instance.WholeMapMaxPoint.position, Random.value);
+            Vector2 pos = new Vector2(Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.x, BasicInformation.Instance.WholeMapMaxPoint.position.x), Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.y, BasicInformation.Instance.WholeMapMaxPoint.position.y));
             Transform item = GameObjectPool.Instance.CreateObject(type.ToString(), Resources.Load(enemyPrefabPath[type]) as GameObject, pos, Quaternion.identity).transform;
             item.SetParent(transform);
             enemyDictionary[type].Add(item);

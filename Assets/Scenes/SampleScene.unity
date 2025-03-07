@@ -1121,6 +1121,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1609170759
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2077337234}
+    m_Modifications:
+    - target: {fileID: 487603534831369969, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_Name
+      value: FollowCharacterEnemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.99
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+--- !u!4 &1609170760 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3063049365307277928, guid: 333b9eeec2a66bc4298d141cefd4c2aa, type: 3}
+  m_PrefabInstance: {fileID: 1609170759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1830002987
 GameObject:
   m_ObjectHideFlags: 0
@@ -1242,15 +1304,18 @@ MonoBehaviour:
   rotateSpeed: 50
   ease: 28
   moveTime: 0.5
+  health: 3
   times: 1
   hitRadius: 3
   boundForce: 3
+  isShield: 0
   LD: {fileID: 0}
   RU: {fileID: 0}
   BoundDir: {x: 0, y: 0}
   start: {x: 0, y: 0}
   end: {x: 0, y: 0}
   boundPoint: {x: 0, y: 0}
+  AAA: {x: 0, y: 0}
 --- !u!58 &1830002990
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1540,7 +1605,8 @@ Transform:
   m_LocalPosition: {x: -0.3230125, y: -0.06226747, z: 0.024751212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1609170760}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2077337235
