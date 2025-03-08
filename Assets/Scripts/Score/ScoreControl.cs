@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 namespace ScoreSpace
 {
     public class ScoreControl : MonoSingleton<ScoreControl>
@@ -25,7 +26,7 @@ namespace ScoreSpace
         public void PlusScore(int num)
         {
             Scores += num;
-            UIControl.Instance.UIScorePlus(num);
+            UIManager.Instance.GetUIWindow<UIControl>().UIScorePlus(num);
         }
         public void PlusScore(int num,Vector3 pos,float lastTime)
         {
@@ -36,7 +37,7 @@ namespace ScoreSpace
                 mult.ShutMult(lastTime);
             }
             Scores += num*num;
-            UIControl.Instance.UIScorePlus(num*num);
+            UIManager.Instance.GetUIWindow<UIControl>().UIScorePlus(num*num);
         }
         public void MinusScore(int num)
         {
@@ -45,6 +46,27 @@ namespace ScoreSpace
             {
                 Debug.Log("您的得分小于0");
                 Scores = 0;
+            }
+        }
+        public void FinishGameScoreShow()
+        {
+            UIManager.Instance.GetUIWindow<UIControl>().ShutAndOpen(false);
+            FinishUIWindow finishUIWindow = UIManager.Instance.GetUIWindow<FinishUIWindow>();
+            finishUIWindow.ShutAndOpen(true);
+            finishUIWindow.score.text = Scores.ToString();
+            StartCoroutine(BackToStartScene());
+            Time.timeScale = 0;
+        }
+        IEnumerator BackToStartScene()
+        {
+            while (true)
+            {
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    SceneManager.LoadScene("StartScene");
+                    break;
+                }
+                yield return null;
             }
         }
     }

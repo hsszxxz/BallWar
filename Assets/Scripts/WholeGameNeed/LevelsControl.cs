@@ -54,13 +54,13 @@ public class LevelsControl : MonoSingleton<LevelsControl>
     }
     private void ShowLevelProcess(int level)
     {
-        UIControl.Instance.LevelShow(level);
+        UIManager.Instance.GetUIWindow<UIControl>().LevelShow(level);
         StartCoroutine(CloseShowLevelNum(level));
     }
     private IEnumerator CloseShowLevelNum(int level)
     {
         yield return new WaitForSeconds(levelShowTime);
-        UIControl.Instance.LevelFade();
+        UIManager.Instance.GetUIWindow<UIControl>().LevelFade();
         Generate(level);
     }
     private void GenerateAccordingItemsConfig(ItemsConfig config)

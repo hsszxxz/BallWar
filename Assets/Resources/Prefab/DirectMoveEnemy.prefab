@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4621325249512647503}
   - component: {fileID: 7993997476133834259}
   - component: {fileID: 4669576395905254352}
+  - component: {fileID: 7650309305658765725}
   m_Layer: 0
   m_Name: DirectMoveEnemy
   m_TagString: Untagged
@@ -141,3 +142,25 @@ CapsuleCollider2D:
   m_Offset: {x: -0.13578415, y: -0.032688737}
   m_Size: {x: 1.1384315, y: 2.2946222}
   m_Direction: 0
+--- !u!95 &7650309305658765725
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677459515552416046}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1b3943cc8fa6a824cbf5a87953617a3e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
-public class UIControl : MonoSingleton<UIControl>
+public class UIControl :UIWindow
 {
     public GameObject levelNum;
     public GameObject scoreGo;
@@ -19,8 +19,9 @@ public class UIControl : MonoSingleton<UIControl>
     private Animator scorePlusAnimator;
     private Animator levelNumAnimator;
     private string[] bigWriteNum = new string[10] { "十", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         levelNumAnimator = levelNum.GetComponent<Animator>();
         scorePlusAnimator = scorePlusGo.GetComponent<Animator>();
         scoreText = scoreGo.GetComponent<Text>();
