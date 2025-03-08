@@ -69,6 +69,7 @@ public class PlayerCtrl : MonoBehaviour
         if(!isFly) 
             buttonHold = Input.GetKey(KeyCode.Space);
 
+        target.gameObject.SetActive(!isFly);
         KeyControl();
         TargetRotate();
     }
@@ -82,6 +83,9 @@ public class PlayerCtrl : MonoBehaviour
 
     private void TargetRotate()
     {
+        if (isFly)
+            return;
+
         if (!WallCheck())
             target.localPosition = new Vector3(0, currentRadius, 0);
 
@@ -97,7 +101,7 @@ public class PlayerCtrl : MonoBehaviour
             {
                 holdTime += Time.deltaTime;
                 currentRadius = radiusAddSpeedCurve.Evaluate(holdTime / maxHoldTime) * maxRadius + defaultRadius;
-                if (currentRadius >= hitRadius)
+                if (currentRadius - hitRadius is >= 0 and <= 0.1f)
                     CameraShake.Instance.TriggerShake();
             }
             else
@@ -115,23 +119,10 @@ public class PlayerCtrl : MonoBehaviour
     private void Move()
     {
         isFly = true;
-        var targetPos = target.position;
         holdTime = 0;
 
-        float distance = Vector2.Distance(transform.position, target.position);
         start = transform.position;
-
-        target.DOMove(targetPos, moveTime).SetEase(ease);
-        transform.DOMove(targetPos, moveTime).SetEase(ease).OnComplete(() =>
-        {
-            if (currentRadius > distance)
-                ReBound();
-
-            currentRadius = defaultRadius;
-            ScoreControl.Instance.PlusScore(times-1, transform.position, 1.8f);
-            times = 1;
-            isFly = false;
-        });
+        RayBound();
     }
 
     private bool WallCheck()
@@ -143,7 +134,7 @@ public class PlayerCtrl : MonoBehaviour
         float r = RU.position.x;
         float u = RU.position.y;
 
-        if (p.x > l && p.y > d && p.x < r && p.y < u && target.position != Vector3.zero) 
+        if (p.x > l && p.y > d && p.x < r && p.y < u && target.position != Vector3.zero)
             return false;
 
         //ÊúÖ±
@@ -165,36 +156,12 @@ public class PlayerCtrl : MonoBehaviour
         return transform.position + t * dirA;
     }
 
-    private void ReBound()
-    {
-        Vector2 dir = (transform.position - target.position).normalized;
-        Vector2 normal;
-
-        float epsilon = 0.05f;
-        if (Mathf.Abs(target.position.x - LD.position.x) < epsilon)
-            normal = Vector2.up;
-        else if (Mathf.Abs(target.position.x - RU.position.x) < epsilon)
-            normal = Vector2.down;
-        else if (Mathf.Abs(target.position.y - LD.position.y) < epsilon)
-            normal = Vector2.left;
-        else if (Mathf.Abs(target.position.y - RU.position.y) < epsilon)
-            normal = Vector2.right;
-        else
-            return;
-
-        Vector2 boundDir = Vector2.Reflect(dir, normal).normalized;
-        boundPoint = target.position;
-        BoundDir = boundDir;
-        transform.DOMove(new Vector2(target.position.x, target.position.y) + boundDir * boundForce, moveTime).SetEase(Ease.OutQuint);
-        end = transform.position;
-    }
-
     private void CalulateScore(Enemy enemy)
     {
         if (isFly && currentRadius >= hitRadius)
         {
             enemy.EnemyDie();
-            CameraShake.Instance.TriggerShake(0.3f);
+            CameraShake.Instance.TriggerShake();
             times++;
             return;
         }
@@ -211,12 +178,71 @@ public class PlayerCtrl : MonoBehaviour
         }
     }
 
+    private void RayBound()
+    {
+        List<Vector2> boundPoints = new();
+        List<ShakeType> shakeModeList = new();
+        Vector2 start = transform.position, end = target.position, normal;
+        Vector2 dir = (end - start).normalized;
+
+        float e = 0.2f;
+        for (int i = 0; i < 5; i++)
+        {
+            if (end.x <= LD.position.x + e)
+            {
+                normal = Vector2.right;
+                shakeModeList.Add(ShakeType.Horizontal);
+            }
+            else if (end.x >= RU.position.x - e)
+            {
+                normal = Vector2.left;
+                shakeModeList.Add(ShakeType.Horizontal);
+            }
+            else if (end.y <= LD.position.y + e)
+            {
+                normal = Vector2.up;
+                shakeModeList.Add(ShakeType.Vertical);
+            }
+            else if (end.y >= RU.position.y - e)
+            {
+                normal = Vector2.down;
+                shakeModeList.Add(ShakeType.Vertical);
+            }
+            else
+                break;
+
+            boundPoints.Add(end);
+            dir = Vector2.Reflect(dir, normal).normalized;
+            start = end;
+            end = start + dir * boundForce;
+        }
+
+        var sequence = DOTween.Sequence();
+        for (int i = 0; i < boundPoints.Count; i++)
+        {
+            sequence.Append(transform.DOMove(boundPoints[i], moveTime)
+                .OnComplete(()=>
+                {
+                    CameraShake.Instance.TriggerShake(0.5f, shakeModeList[i - 1]);
+                })
+            ).SetEase(ease);
+        }
+        sequence.Append(transform.DOMove(end, moveTime)).SetEase(ease);
+        sequence.OnComplete(() =>
+        {
+            isFly = false;
+            currentRadius = defaultRadius;
+            ScoreControl.Instance.PlusScore(times - 1, transform.position, 1.8f);
+            times = 1;
+        });
+    }
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(start, boundPoint);
-        Gizmos.DrawLine(end,boundPoint);
+        Gizmos.DrawLine(end, boundPoint);
         Gizmos.DrawSphere(AAA, .3f);
     }
+
 }
