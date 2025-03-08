@@ -32,16 +32,16 @@ public class CameraShake : MonoSingleton<CameraShake>
     }
 
     // 外部调用触发震动
-    public void TriggerShake(float intensity = 0.2f, ShakeType type = ShakeType.RandomDirection)
+    public void TriggerShake(float intensity = 0.2f, float duration = 0.5f, ShakeType type = ShakeType.RandomDirection)
     {
         if (shakeCoroutine != null)
         {
             StopCoroutine(shakeCoroutine);
         }
-        shakeCoroutine = StartCoroutine(Shake(intensity, type));
+        shakeCoroutine = StartCoroutine(Shake(intensity, duration, type));
     }
 
-    System.Collections.IEnumerator Shake(float intensity, ShakeType type)
+    System.Collections.IEnumerator Shake(float intensity, float duration, ShakeType type)
     {
         float elapsed = 0f;
         float currentIntensity = intensity;

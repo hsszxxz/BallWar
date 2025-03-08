@@ -8,6 +8,7 @@ using ScoreSpace;
 public class PlayerCtrl : MonoBehaviour
 {
     public Transform target;
+    public SpriteRenderer sprite;
 
     [Tooltip("按钮是否按住")]public bool buttonHold = false;
     [Tooltip("是否在飞行")]public bool isFly = false;
@@ -172,9 +173,10 @@ public class PlayerCtrl : MonoBehaviour
         }
 
         health--;
+        StartCoroutine(GetHurt());
         if (health == 0)
         {
-            //GAME OVER
+            StartCoroutine(Dead());
         }
     }
 
@@ -223,7 +225,7 @@ public class PlayerCtrl : MonoBehaviour
             sequence.Append(transform.DOMove(boundPoints[i], moveTime)
                 .OnComplete(()=>
                 {
-                    CameraShake.Instance.TriggerShake(0.5f, shakeModeList[i - 1]);
+                    CameraShake.Instance.TriggerShake(0.5f, 0.5f,shakeModeList[i - 1]);
                 })
             ).SetEase(ease);
         }
@@ -235,6 +237,29 @@ public class PlayerCtrl : MonoBehaviour
             ScoreControl.Instance.PlusScore(times - 1, transform.position, 1.8f);
             times = 1;
         });
+    }
+
+    private IEnumerator GetHurt()
+    {
+        Color col = sprite.color;
+        for (int i = 0; i < 4; i++)
+        {
+            DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 1, 0.1f, 0.15f)
+                .OnComplete(()=>
+                {
+                    DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 0.1f, 1, 0.15f);
+                });
+            yield return new WaitForSeconds(0.3f);
+        }
+    }
+
+    private IEnumerator Dead()
+    {
+        gameObject.SetActive(false);
+        CameraShake.Instance.TriggerShake(1, 3);
+        GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load("Prefab/DeathEffection") as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
+        yield return new WaitForSeconds(3);
+        ScoreControl.Instance.FinishGameScoreShow();
     }
 
     void OnDrawGizmos()
