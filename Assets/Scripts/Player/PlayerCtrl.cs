@@ -162,6 +162,7 @@ public class PlayerCtrl : MonoBehaviour
         if (isFly && currentRadius >= hitRadius)
         {
             enemy.EnemyDie();
+            AudioManager.Instance.PlaySoundEffect(AudioManager.Instance.Kill);
             CameraShake.Instance.TriggerShake(killStr);
             times++;
             return;
@@ -187,7 +188,10 @@ public class PlayerCtrl : MonoBehaviour
             return;
 
         health--;
-        sprite.sprite = C[3 - health];
+        if (health >= 0)
+        {
+            sprite.sprite = C[3 - health];
+        }
         enemy.EnemyDie();
         StartCoroutine(GetHurt());
         if (health == 0)
@@ -269,7 +273,8 @@ public class PlayerCtrl : MonoBehaviour
     {
         if (!canHurt)
             yield break;
-        
+
+        AudioManager.Instance.PlaySoundEffect(AudioManager.Instance.Hurt);
         canHurt = false;
         Color col = sprite.color;
         Sequence sequence = DOTween.Sequence();

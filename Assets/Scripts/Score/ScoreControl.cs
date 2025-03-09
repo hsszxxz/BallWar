@@ -64,11 +64,12 @@ namespace ScoreSpace
             FinishUIWindow finishUIWindow = UIManager.Instance.GetUIWindow<FinishUIWindow>();
             finishUIWindow.ShutAndOpen(true);
             finishUIWindow.score.text = Scores.ToString();
-            StartCoroutine(BackToStartScene());
-            Time.timeScale = 0;
+            StartCoroutine(BackToStartScene(finishUIWindow.FinishShow()));
         }
-        IEnumerator BackToStartScene()
+        IEnumerator BackToStartScene(float animationTime)
         {
+            yield return new WaitForSeconds(animationTime);
+            Time.timeScale = 0;
             while (true)
             {
                 if (Input.GetKeyDown(KeyCode.Space))
