@@ -8,9 +8,13 @@ using ScoreSpace;
 public class PlayerCtrl : MonoBehaviour
 {
     public Transform target;
+    public SpriteRenderer sprite;
 
+    [Header("主属性")]
+    [Tooltip("生命值")]public int health = 3;
     [Tooltip("按钮是否按住")]public bool buttonHold = false;
     [Tooltip("是否在飞行")]public bool isFly = false;
+    [Tooltip("是否能受伤")]public bool canHurt = true;
 
     [Header("半径")]
     [Tooltip("现在半径")] public float currentRadius = 1f;
@@ -27,23 +31,16 @@ public class PlayerCtrl : MonoBehaviour
     [Tooltip("移动时间")] public float moveTime = 0.2f;
 
     [Header("增益")]
-    public int health = 3;
-    public int times = 1;
-    public float hitRadius = 3;
-    public float boundForce = 3f;
-    public bool isShield;
+    [Tooltip("连击个数")]public int times = 1;
+    [Tooltip("进入攻击的半径")] public float hitRadius = 3;
+    [Tooltip("反弹力")] public float boundForce = 3f;
+    [Tooltip("是否有护盾")] public bool isShield;
 
+    [Header("其他")]
     [Tooltip("左下点")] public Transform LD;
     [Tooltip("右上点")] public Transform RU;
-
-
-    [Header("Debug")]
-    public Vector2 BoundDir;
-    public Vector2 start;
-    public Vector2 end;
-    public Vector2 boundPoint;
-    public Vector2 AAA;
-
+    [Tooltip("护盾")] public GameObject shieldObject;
+    [Tooltip("状态图像")] public List<Sprite> C = new();
 
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -55,6 +52,11 @@ public class PlayerCtrl : MonoBehaviour
         if(other.TryGetComponent<GameToolItem>(out var shield))
         {
             isShield = true;
+            shieldObject.SetActive(isShield); 
+            var s = shieldObject.GetComponent<SpriteRenderer>();
+            s.color = Color.white;
+            shieldObject.transform.localScale = Vector3.zero;
+            shieldObject.transform.DOScale(1, 0.8f);
             shield.CollectTool();
         } 
         if(other.TryGetComponent<ScoreItem>(out var candy))
@@ -66,9 +68,10 @@ public class PlayerCtrl : MonoBehaviour
 
     void Update()
     {
-        if(!isFly) 
+        if(!isFly && health > 0) 
             buttonHold = Input.GetKey(KeyCode.Space);
 
+        target.gameObject.SetActive(!isFly);
         KeyControl();
         TargetRotate();
     }
@@ -80,12 +83,17 @@ public class PlayerCtrl : MonoBehaviour
         StartCoroutine(RadiusAdd());
     }
 
+    float addTime = 0;
     private void TargetRotate()
     {
+        if (isFly)
+            return;
+
         if (!WallCheck())
             target.localPosition = new Vector3(0, currentRadius, 0);
 
-        Quaternion playerRotation = Quaternion.Euler(0, 0, rotateSpeed * Time.time);
+        addTime += Time.deltaTime;
+        Quaternion playerRotation = Quaternion.Euler(0, 0, addTime * rotateSpeed);
         transform.rotation = playerRotation;
     }
 
@@ -97,7 +105,7 @@ public class PlayerCtrl : MonoBehaviour
             {
                 holdTime += Time.deltaTime;
                 currentRadius = radiusAddSpeedCurve.Evaluate(holdTime / maxHoldTime) * maxRadius + defaultRadius;
-                if (currentRadius >= hitRadius)
+                if (currentRadius - hitRadius is >= 0 and <= 0.1f)
                     CameraShake.Instance.TriggerShake();
             }
             else
@@ -115,35 +123,20 @@ public class PlayerCtrl : MonoBehaviour
     private void Move()
     {
         isFly = true;
-        var targetPos = target.position;
         holdTime = 0;
 
-        float distance = Vector2.Distance(transform.position, target.position);
-        start = transform.position;
-
-        target.DOMove(targetPos, moveTime).SetEase(ease);
-        transform.DOMove(targetPos, moveTime).SetEase(ease).OnComplete(() =>
-        {
-            if (currentRadius > distance)
-                ReBound();
-
-            currentRadius = defaultRadius;
-            ScoreControl.Instance.PlusScore(times-1, transform.position, 1.8f);
-            times = 1;
-            isFly = false;
-        });
+        RayBound();
     }
 
     private bool WallCheck()
     {
         Vector3 p = transform.position + (target.position - transform.position).normalized * currentRadius;
-        AAA = p;
         float l = LD.position.x;
         float d = LD.position.y;
         float r = RU.position.x;
         float u = RU.position.y;
 
-        if (p.x > l && p.y > d && p.x < r && p.y < u && target.position != Vector3.zero) 
+        if (p.x > l && p.y > d && p.x < r && p.y < u && target.position != Vector3.zero)
             return false;
 
         //竖直
@@ -165,58 +158,134 @@ public class PlayerCtrl : MonoBehaviour
         return transform.position + t * dirA;
     }
 
-    private void ReBound()
-    {
-        Vector2 dir = (transform.position - target.position).normalized;
-        Vector2 normal;
-
-        float epsilon = 0.05f;
-        if (Mathf.Abs(target.position.x - LD.position.x) < epsilon)
-            normal = Vector2.up;
-        else if (Mathf.Abs(target.position.x - RU.position.x) < epsilon)
-            normal = Vector2.down;
-        else if (Mathf.Abs(target.position.y - LD.position.y) < epsilon)
-            normal = Vector2.left;
-        else if (Mathf.Abs(target.position.y - RU.position.y) < epsilon)
-            normal = Vector2.right;
-        else
-            return;
-
-        Vector2 boundDir = Vector2.Reflect(dir, normal).normalized;
-        boundPoint = target.position;
-        BoundDir = boundDir;
-        transform.DOMove(new Vector2(target.position.x, target.position.y) + boundDir * boundForce, moveTime).SetEase(Ease.OutQuint);
-        end = transform.position;
-    }
-
     private void CalulateScore(Enemy enemy)
     {
         if (isFly && currentRadius >= hitRadius)
         {
             enemy.EnemyDie();
-            CameraShake.Instance.TriggerShake(0.3f);
+            CameraShake.Instance.TriggerShake();
             times++;
             return;
         }
+
+        if (!canHurt)
+            return;
+
         if (isShield)
         {
             isShield = false;
+            var sprite = shieldObject.GetComponent<SpriteRenderer>();
+            shieldObject.transform.DOScale(10, 0.8f);
+            DOTween.To((val) => { sprite.color = new Vector4(sprite.color.r, sprite.color.g, sprite.color.b, val); }, 1, 0, 0.8f)
+                .OnComplete(() =>
+                {
+                    shieldObject.SetActive(isShield);
+                });
             return;
         }
 
+        if (!canHurt)
+            return;
+
         health--;
+        sprite.sprite = C[3 - health];
+        StartCoroutine(GetHurt());
         if (health == 0)
         {
-            //GAME OVER
+            StartCoroutine(Dead());
         }
     }
 
-
-    void OnDrawGizmos()
+    private void RayBound()
     {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(start, boundPoint);
-        Gizmos.DrawLine(end,boundPoint);
-        Gizmos.DrawSphere(AAA, .3f);
+        List<Vector2> boundPoints = new();
+        List<ShakeType> shakeModeList = new();
+        Vector2 start = transform.position, end = target.position, normal;
+        Vector2 dir = (end - start).normalized;
+
+        float e = 0.3f;
+        for (int i = 0; i < 5; i++)
+        {
+            if (end.x <= LD.position.x + e)
+            {
+                normal = Vector2.right;
+                shakeModeList.Add(ShakeType.Horizontal);
+            }
+            else if (end.x >= RU.position.x - e)
+            {
+                normal = Vector2.left;
+                shakeModeList.Add(ShakeType.Horizontal);
+            }
+            else if (end.y <= LD.position.y + e)
+            {
+                normal = Vector2.up;
+                shakeModeList.Add(ShakeType.Vertical);
+            }
+            else if (end.y >= RU.position.y - e)
+            {
+                normal = Vector2.down;
+                shakeModeList.Add(ShakeType.Vertical);
+            }
+            else
+                break;
+
+            boundPoints.Add(end);
+            dir = Vector2.Reflect(dir, normal).normalized;
+            start = end;
+            end = start + dir * boundForce;
+        }
+
+        var sequence = DOTween.Sequence();
+        for (int i = 0; i < boundPoints.Count; i++)
+        {
+            sequence.Append(transform.DOMove(boundPoints[i], moveTime)
+                .OnComplete(()=>
+                {
+                    CameraShake.Instance.TriggerShake(0.5f, 0.5f,shakeModeList[i - 1]);
+                })
+            ).SetEase(ease);
+        }
+        sequence.Append(transform.DOMove(end, moveTime)).SetEase(ease);
+        sequence.OnComplete(() =>
+        {
+            isFly = false;
+            currentRadius = defaultRadius;
+            ScoreControl.Instance.PlusScore(times - 1, transform.position, 1.8f);
+            times = 1;
+        });
     }
+
+    private IEnumerator GetHurt()
+    {
+        if (!canHurt)
+            yield break;
+        
+        canHurt = false;
+        Color col = sprite.color;
+        Sequence sequence = DOTween.Sequence();
+        for (int i = 0; i < 5; i++) 
+        {
+            sequence.Append(DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 1, 0.1f, 0.15f)
+                .OnComplete(() =>
+                {
+                    sprite.DOFade(1, 0.15f);
+                }).SetDelay(0.3f)
+            );
+        }
+        sequence.OnComplete(() =>
+        {
+            canHurt = true;
+        });
+
+    }
+
+    private IEnumerator Dead()
+    {
+        target.GetComponent<SpriteRenderer>().sortingOrder = -5;
+        CameraShake.Instance.TriggerShake(1, 3);
+        GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load("Prefab/DeathEffection") as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
+        yield return new WaitForSeconds(3);
+        ScoreControl.Instance.FinishGameScoreShow();
+    }
+
 }

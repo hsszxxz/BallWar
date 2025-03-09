@@ -1,15 +1,14 @@
 using UnityEngine;
+public enum ShakeType
+{
+    Horizontal,     // 水平震动
+    Vertical,       // 垂直震动
+    RandomDirection,// 随机方向
+    Explosion       // 爆炸式震动（先强后弱）
+}
 
 public class CameraShake : MonoSingleton<CameraShake>
 {
-    public enum ShakeType
-    {
-        Horizontal,     // 水平震动
-        Vertical,       // 垂直震动
-        RandomDirection,// 随机方向
-        Explosion       // 爆炸式震动（先强后弱）
-    }
-
     [Header("震动参数")]
     [Tooltip("震动类型")]
     public ShakeType shakeType = ShakeType.RandomDirection;
@@ -33,16 +32,16 @@ public class CameraShake : MonoSingleton<CameraShake>
     }
 
     // 外部调用触发震动
-    public void TriggerShake(float intensity = 0.1f)
+    public void TriggerShake(float intensity = 0.2f, float duration = 0.5f, ShakeType type = ShakeType.RandomDirection)
     {
         if (shakeCoroutine != null)
         {
             StopCoroutine(shakeCoroutine);
         }
-        shakeCoroutine = StartCoroutine(Shake(intensity));
+        shakeCoroutine = StartCoroutine(Shake(intensity, duration, type));
     }
 
-    System.Collections.IEnumerator Shake(float intensity)
+    System.Collections.IEnumerator Shake(float intensity, float duration, ShakeType type)
     {
         float elapsed = 0f;
         float currentIntensity = intensity;
@@ -66,7 +65,7 @@ public class CameraShake : MonoSingleton<CameraShake>
 
             // 应用震动方向
             Vector3 offset = Vector3.zero;
-            switch (shakeType)
+            switch (type)
             {
                 case ShakeType.Horizontal:
                     offset = transform.right * noiseX * currentIntensity;
