@@ -87,6 +87,8 @@ public class LevelsControl : MonoSingleton<LevelsControl>
                 GenenrateEnemy(EnemyType.FollowCharacter, false);
             }
         }
+        ScoreControl.Instance.ClearAllScoreItems();
+        GameToolControl.Instance.ClearAllGameToolItems();
         ScoreControl.Instance.RandomGenerateScoreItems(config.scoreNum);
         GameToolControl.Instance.RandomGenerateGameToolItems(config.toolNum);
     }

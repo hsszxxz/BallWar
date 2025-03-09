@@ -25,4 +25,8 @@ public class MultItem : MonoBehaviour
     {
         animator.SetBool("show", false);
     }
+    private void OnEnable()
+    {
+        GetComponentInParent<Canvas>().sortingOrder = 10;
+    }
 }

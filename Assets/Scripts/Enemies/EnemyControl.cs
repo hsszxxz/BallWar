@@ -38,15 +38,15 @@ namespace EnemySpace
         //ø’‘Ú∑µªÿtrue
         private bool DetectDictionaryIsEmpty()
         {
-            bool flag = true;
+            int enemyNum = 0;
             foreach (List<Transform> enemies in enemyDictionary.Values)
             {
-                if (enemies.Count > 0) { flag = false; }
+                enemyNum += enemies.Count;
             }
             //Debug.Log("Fixed:"+enemyDictionary[EnemyType.Fixed].Count);
             //Debug.Log("Direct:"+enemyDictionary[EnemyType.DirectMove].Count);
             //Debug.Log("Follow:" + enemyDictionary[EnemyType.FollowCharacter].Count);
-            return flag;
+            return enemyNum <=1;
         }
         public void MinusEnemyFromDictionary(Transform enemy,bool isChargeEmpty = true)
         {
@@ -63,6 +63,10 @@ namespace EnemySpace
         public Transform GenerateOneEnemy(EnemyType type)
         {
             Vector2 pos = new Vector2(Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.x, BasicInformation.Instance.WholeMapMaxPoint.position.x), Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.y, BasicInformation.Instance.WholeMapMaxPoint.position.y));
+            if (type==EnemyType.Fixed)
+            {
+                pos = pos / 1.5f;
+            }
             Transform item = GameObjectPool.Instance.CreateObject(type.ToString(), Resources.Load(enemyPrefabPath[type]) as GameObject, pos, Quaternion.identity).transform;
             item.SetParent(transform);
             enemyDictionary[type].Add(item);

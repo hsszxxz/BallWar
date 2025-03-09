@@ -10,6 +10,7 @@ namespace ScoreSpace
         public int Scores;
         private string scorePrefabPath = "Prefab/Score";
         private string multPrefabPath = "Prefab/Mult";
+        private List<Transform> scoreItems = new List<Transform>();
         public override void Init()
         {
             base.Init();
@@ -21,7 +22,16 @@ namespace ScoreSpace
             {
                 Vector2 pos = new Vector2(Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.x, BasicInformation.Instance.WholeMapMaxPoint.position.x), Random.Range(BasicInformation.Instance.WholeMapMinPoint.position.y, BasicInformation.Instance.WholeMapMaxPoint.position.y));
                 Transform item = GameObjectPool.Instance.CreateObject("score", Resources.Load(scorePrefabPath) as GameObject, pos, Quaternion.identity).transform;
+                scoreItems.Add(item);
             }
+        }
+        public void ClearAllScoreItems()
+        {
+            foreach (Transform item in scoreItems)
+            {
+                GameObjectPool.Instance.CollectObject(item.gameObject);
+            }
+            scoreItems.Clear();
         }
         public void PlusScore(int num)
         {
