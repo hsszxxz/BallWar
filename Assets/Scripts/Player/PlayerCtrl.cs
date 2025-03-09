@@ -42,6 +42,11 @@ public class PlayerCtrl : MonoBehaviour
     [Tooltip("护盾")] public GameObject shieldObject;
     [Tooltip("状态图像")] public List<Sprite> C = new();
 
+    [Header("震动")]
+    [Tooltip("蓄力震动强度")] public float powerStr = 0.05f;
+    [Tooltip("击杀震动强度")] public float killStr = 0.2f;
+    [Tooltip("反弹震动强度")] public float boundStr = 0.2f;
+    [Tooltip("死亡震动强度")] public float deadStr = 1f;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -106,7 +111,7 @@ public class PlayerCtrl : MonoBehaviour
                 holdTime += Time.deltaTime;
                 currentRadius = radiusAddSpeedCurve.Evaluate(holdTime / maxHoldTime) * maxRadius + defaultRadius;
                 if (currentRadius - hitRadius is >= 0 and <= 0.1f)
-                    CameraShake.Instance.TriggerShake();
+                    CameraShake.Instance.TriggerShake(powerStr);
             }
             else
             {
@@ -137,13 +142,16 @@ public class PlayerCtrl : MonoBehaviour
         float u = RU.position.y;
 
         if (p.x > l && p.y > d && p.x < r && p.y < u && target.position != Vector3.zero)
+        {
             return false;
+        }
 
+        float e = 0f;
         //竖直
-        if (p.x <= l || p.x >= r)
+        if (p.x <= l + e || p.x >= r - e)
             target.position = p.x >= r ? FindIntersection(new Vector2(r, d), RU.position) : FindIntersection(LD.position, new Vector2(l, u));
         //水平
-        if (p.y <= d || p.y >= u)
+        if (p.y <= d + e || p.y >= u - e)
             target.position = p.y >= u ? FindIntersection(new Vector2(l, u), RU.position) : FindIntersection(LD.position, new Vector2(r, d));
         return true;
     }
@@ -163,7 +171,7 @@ public class PlayerCtrl : MonoBehaviour
         if (isFly && currentRadius >= hitRadius)
         {
             enemy.EnemyDie();
-            CameraShake.Instance.TriggerShake();
+            CameraShake.Instance.TriggerShake(killStr);
             times++;
             return;
         }
@@ -200,37 +208,45 @@ public class PlayerCtrl : MonoBehaviour
     {
         List<Vector2> boundPoints = new();
         List<ShakeType> shakeModeList = new();
-        Vector2 start = transform.position, end = target.position, normal;
+        Vector2 start = transform.position, end = target.position;
         Vector2 dir = (end - start).normalized;
 
-        float e = 0.3f;
-        for (int i = 0; i < 5; i++)
+        float e = 0.5f;
+        for (int i = 0; i < 4; i++)
         {
+            List<Vector2> normals = new List<Vector2>();
+            List<ShakeType> currentShakes = new List<ShakeType>();
+
             if (end.x <= LD.position.x + e)
             {
-                normal = Vector2.right;
-                shakeModeList.Add(ShakeType.Horizontal);
+                normals.Add(Vector2.right);
+                currentShakes.Add(ShakeType.Horizontal);
             }
-            else if (end.x >= RU.position.x - e)
+            if (end.x >= RU.position.x - e)
             {
-                normal = Vector2.left;
-                shakeModeList.Add(ShakeType.Horizontal);
+                normals.Add(Vector2.left);
+                currentShakes.Add(ShakeType.Horizontal);
             }
-            else if (end.y <= LD.position.y + e)
+            if (end.y <= LD.position.y + e)
             {
-                normal = Vector2.up;
-                shakeModeList.Add(ShakeType.Vertical);
+                normals.Add(Vector2.up);
+                currentShakes.Add(ShakeType.Vertical);
             }
-            else if (end.y >= RU.position.y - e)
+            if (end.y >= RU.position.y - e)
             {
-                normal = Vector2.down;
-                shakeModeList.Add(ShakeType.Vertical);
+                normals.Add(Vector2.down);
+                currentShakes.Add(ShakeType.Vertical);
             }
-            else
+
+            if (normals.Count == 0)
                 break;
 
             boundPoints.Add(end);
-            dir = Vector2.Reflect(dir, normal).normalized;
+            shakeModeList.AddRange(currentShakes);
+            foreach (Vector2 n in normals)
+            {
+                dir = Vector2.Reflect(dir, n).normalized;
+            }
             start = end;
             end = start + dir * boundForce;
         }
@@ -241,7 +257,7 @@ public class PlayerCtrl : MonoBehaviour
             sequence.Append(transform.DOMove(boundPoints[i], moveTime)
                 .OnComplete(()=>
                 {
-                    CameraShake.Instance.TriggerShake(0.5f, 0.5f,shakeModeList[i - 1]);
+                    CameraShake.Instance.TriggerShake(boundStr, 0.5f,shakeModeList[i - 1]);
                 })
             ).SetEase(ease);
         }
@@ -282,7 +298,7 @@ public class PlayerCtrl : MonoBehaviour
     private IEnumerator Dead()
     {
         target.GetComponent<SpriteRenderer>().sortingOrder = -5;
-        CameraShake.Instance.TriggerShake(1, 3);
+        CameraShake.Instance.TriggerShake(deadStr, 3);
         GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load("Prefab/DeathEffection") as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
         yield return new WaitForSeconds(3);
         ScoreControl.Instance.FinishGameScoreShow();
