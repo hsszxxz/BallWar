@@ -9,6 +9,7 @@ namespace ScoreSpace
         {
             ScoreControl.Instance.PlusScore(1);
             GameObjectPool.Instance.CollectObject(gameObject);
+            AudioManager.Instance.PlaySoundEffect(AudioManager.Instance.Peek);
         }
     }
 }
