@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 10
+  serializedVersion: 9
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -44,6 +44,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 12
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -66,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -271,8 +275,6 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -358,8 +360,6 @@ TrailRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -476,7 +476,7 @@ GameObject:
   m_IsActive: 1
 --- !u!95 &300452419
 Animator:
-  serializedVersion: 7
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -490,7 +490,6 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -729,7 +728,7 @@ MonoBehaviour:
   canHurt: 1
   currentRadius: 1
   defaultRadius: 1
-  maxRadius: 7
+  maxRadius: 6.5
   holdTime: 0
   maxHoldTime: 10
   radiusAddSpeedCurve:
@@ -757,7 +756,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   radiusAddPerTimes: 0.1
-  rotateSpeed: 80
+  rotateSpeed: 85
   ease: 18
   moveTime: 0.3
   times: 1
@@ -772,10 +771,10 @@ MonoBehaviour:
   - {fileID: -875074015230598160, guid: 99e2172d1450808429068ae8a2fe4c25, type: 3}
   - {fileID: -6910177410339966822, guid: 5ef73b97cbbdcc3468a1825834ab8dfa, type: 3}
   - {fileID: 0}
-  powerStr: 0.05
+  powerStr: 0.07
   killStr: 0.2
   boundStr: 0.1
-  deadStr: 1
+  deadStr: 0.7
 --- !u!212 &385427344
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -793,8 +792,6 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -856,7 +853,6 @@ CircleCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385427342}
   m_Enabled: 1
-  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -880,10 +876,10 @@ CircleCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 1
   m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.003401041, y: 0.004195571}
+  serializedVersion: 2
+  m_Radius: 0.5682149
 --- !u!50 &385427347
 Rigidbody2D:
   serializedVersion: 4
@@ -990,7 +986,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 1
 --- !u!95 &465602364
 Animator:
-  serializedVersion: 7
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1004,7 +1000,6 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -1111,7 +1106,7 @@ MonoBehaviour:
     directMoveEnemyNum: 0
     followCharacterEnemyNum: 0
     scoreNum: 2
-    toolNum: 1
+    toolNum: 2
   levelInit:
     randomEnemy: 0
     randomEnemyNum: 0
@@ -1120,7 +1115,7 @@ MonoBehaviour:
     followCharacterEnemyNum: 0
     scoreNum: 0
     toolNum: 0
-  enemyDistanceToCharacter: 3
+  enemyDistanceToCharacter: 5
   levelShowTime: 2
 --- !u!114 &709371869
 MonoBehaviour:
@@ -1434,12 +1429,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    m_Quality: 3
-    m_FrameInfluence: 0.1
-    m_JitterScale: 1
-    m_MipBias: 0
-    m_VarianceClampScale: 0.9
-    m_ContrastAdaptiveSharpening: 0
+    quality: 3
+    frameInfluence: 0.1
+    jitterScale: 1
+    mipBias: 0
+    varianceClampScale: 0.9
+    contrastAdaptiveSharpening: 0
 --- !u!114 &1338807307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1507,8 +1502,6 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1584,7 +1577,7 @@ RectTransform:
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1647546735
 Animator:
-  serializedVersion: 7
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1598,7 +1591,6 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -2148,8 +2140,6 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
