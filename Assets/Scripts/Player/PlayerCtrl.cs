@@ -39,7 +39,8 @@ public class PlayerCtrl : MonoBehaviour
     [Header("其他")]
     [Tooltip("左下点")] public Transform LD;
     [Tooltip("右上点")] public Transform RU;
-    [Tooltip("状态图像")]public List<Sprite> C = new();
+    [Tooltip("护盾")] public GameObject shieldObject;
+    [Tooltip("状态图像")] public List<Sprite> C = new();
 
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -51,6 +52,11 @@ public class PlayerCtrl : MonoBehaviour
         if(other.TryGetComponent<GameToolItem>(out var shield))
         {
             isShield = true;
+            shieldObject.SetActive(isShield); 
+            var s = shieldObject.GetComponent<SpriteRenderer>();
+            s.color = Color.white;
+            shieldObject.transform.localScale = Vector3.zero;
+            shieldObject.transform.DOScale(1, 0.8f);
             shield.CollectTool();
         } 
         if(other.TryGetComponent<ScoreItem>(out var candy))
@@ -62,7 +68,7 @@ public class PlayerCtrl : MonoBehaviour
 
     void Update()
     {
-        if(!isFly) 
+        if(!isFly && health > 0) 
             buttonHold = Input.GetKey(KeyCode.Space);
 
         target.gameObject.SetActive(!isFly);
@@ -168,8 +174,18 @@ public class PlayerCtrl : MonoBehaviour
         if (isShield)
         {
             isShield = false;
+            var sprite = shieldObject.GetComponent<SpriteRenderer>();
+            shieldObject.transform.DOScale(10, 0.8f);
+            DOTween.To((val) => { sprite.color = new Vector4(sprite.color.r, sprite.color.g, sprite.color.b, val); }, 1, 0, 0.8f)
+                .OnComplete(() =>
+                {
+                    shieldObject.SetActive(isShield);
+                });
             return;
         }
+
+        if (!canHurt)
+            return;
 
         health--;
         sprite.sprite = C[3 - health];
@@ -241,23 +257,30 @@ public class PlayerCtrl : MonoBehaviour
 
     private IEnumerator GetHurt()
     {
+        if (!canHurt)
+            yield break;
+        
         canHurt = false;
         Color col = sprite.color;
-        for (int i = 0; i < 5; i++)
+        Sequence sequence = DOTween.Sequence();
+        for (int i = 0; i < 5; i++) 
         {
-            DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 1, 0.1f, 0.15f)
-                .OnComplete(()=>
+            sequence.Append(DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 1, 0.1f, 0.15f)
+                .OnComplete(() =>
                 {
-                    DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 0.1f, 1, 0.15f);
-                });
-            yield return new WaitForSeconds(0.3f);
+                    sprite.DOFade(1, 0.15f);
+                }).SetDelay(0.3f)
+            );
         }
-        canHurt = true;
+        sequence.OnComplete(() =>
+        {
+            canHurt = true;
+        });
+
     }
 
     private IEnumerator Dead()
     {
-        sprite.sortingOrder = -5;
         target.GetComponent<SpriteRenderer>().sortingOrder = -5;
         CameraShake.Instance.TriggerShake(1, 3);
         GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load("Prefab/DeathEffection") as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
