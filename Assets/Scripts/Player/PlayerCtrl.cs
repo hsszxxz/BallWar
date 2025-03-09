@@ -10,8 +10,11 @@ public class PlayerCtrl : MonoBehaviour
     public Transform target;
     public SpriteRenderer sprite;
 
+    [Header("主属性")]
+    [Tooltip("生命值")]public int health = 3;
     [Tooltip("按钮是否按住")]public bool buttonHold = false;
     [Tooltip("是否在飞行")]public bool isFly = false;
+    [Tooltip("是否能受伤")]public bool canHurt = true;
 
     [Header("半径")]
     [Tooltip("现在半径")] public float currentRadius = 1f;
@@ -28,23 +31,15 @@ public class PlayerCtrl : MonoBehaviour
     [Tooltip("移动时间")] public float moveTime = 0.2f;
 
     [Header("增益")]
-    public int health = 3;
-    public int times = 1;
-    public float hitRadius = 3;
-    public float boundForce = 3f;
-    public bool isShield;
+    [Tooltip("连击个数")]public int times = 1;
+    [Tooltip("进入攻击的半径")] public float hitRadius = 3;
+    [Tooltip("反弹力")] public float boundForce = 3f;
+    [Tooltip("是否有护盾")] public bool isShield;
 
+    [Header("其他")]
     [Tooltip("左下点")] public Transform LD;
     [Tooltip("右上点")] public Transform RU;
-
-
-    [Header("Debug")]
-    public Vector2 BoundDir;
-    public Vector2 start;
-    public Vector2 end;
-    public Vector2 boundPoint;
-    public Vector2 AAA;
-
+    [Tooltip("状态图像")]public List<Sprite> C = new();
 
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -82,6 +77,7 @@ public class PlayerCtrl : MonoBehaviour
         StartCoroutine(RadiusAdd());
     }
 
+    float addTime = 0;
     private void TargetRotate()
     {
         if (isFly)
@@ -90,7 +86,8 @@ public class PlayerCtrl : MonoBehaviour
         if (!WallCheck())
             target.localPosition = new Vector3(0, currentRadius, 0);
 
-        Quaternion playerRotation = Quaternion.Euler(0, 0, rotateSpeed * Time.time);
+        addTime += Time.deltaTime;
+        Quaternion playerRotation = Quaternion.Euler(0, 0, addTime * rotateSpeed);
         transform.rotation = playerRotation;
     }
 
@@ -122,14 +119,12 @@ public class PlayerCtrl : MonoBehaviour
         isFly = true;
         holdTime = 0;
 
-        start = transform.position;
         RayBound();
     }
 
     private bool WallCheck()
     {
         Vector3 p = transform.position + (target.position - transform.position).normalized * currentRadius;
-        AAA = p;
         float l = LD.position.x;
         float d = LD.position.y;
         float r = RU.position.x;
@@ -166,6 +161,10 @@ public class PlayerCtrl : MonoBehaviour
             times++;
             return;
         }
+
+        if (!canHurt)
+            return;
+
         if (isShield)
         {
             isShield = false;
@@ -173,6 +172,7 @@ public class PlayerCtrl : MonoBehaviour
         }
 
         health--;
+        sprite.sprite = C[3 - health];
         StartCoroutine(GetHurt());
         if (health == 0)
         {
@@ -187,7 +187,7 @@ public class PlayerCtrl : MonoBehaviour
         Vector2 start = transform.position, end = target.position, normal;
         Vector2 dir = (end - start).normalized;
 
-        float e = 0.2f;
+        float e = 0.3f;
         for (int i = 0; i < 5; i++)
         {
             if (end.x <= LD.position.x + e)
@@ -241,8 +241,9 @@ public class PlayerCtrl : MonoBehaviour
 
     private IEnumerator GetHurt()
     {
+        canHurt = false;
         Color col = sprite.color;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 1, 0.1f, 0.15f)
                 .OnComplete(()=>
@@ -251,23 +252,17 @@ public class PlayerCtrl : MonoBehaviour
                 });
             yield return new WaitForSeconds(0.3f);
         }
+        canHurt = true;
     }
 
     private IEnumerator Dead()
     {
-        gameObject.SetActive(false);
+        sprite.sortingOrder = -5;
+        target.GetComponent<SpriteRenderer>().sortingOrder = -5;
         CameraShake.Instance.TriggerShake(1, 3);
         GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load("Prefab/DeathEffection") as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
         yield return new WaitForSeconds(3);
         ScoreControl.Instance.FinishGameScoreShow();
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(start, boundPoint);
-        Gizmos.DrawLine(end, boundPoint);
-        Gizmos.DrawSphere(AAA, .3f);
     }
 
 }
