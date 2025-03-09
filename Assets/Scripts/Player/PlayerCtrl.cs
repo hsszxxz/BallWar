@@ -70,7 +70,6 @@ public class PlayerCtrl : MonoBehaviour
         }
     }
 
-
     void Update()
     {
         if(!isFly && health > 0) 
@@ -123,14 +122,6 @@ public class PlayerCtrl : MonoBehaviour
 
         Move();
         StopAllCoroutines();
-    }
-
-    private void Move()
-    {
-        isFly = true;
-        holdTime = 0;
-
-        RayBound();
     }
 
     private bool WallCheck()
@@ -197,6 +188,7 @@ public class PlayerCtrl : MonoBehaviour
 
         health--;
         sprite.sprite = C[3 - health];
+        enemy.EnemyDie();
         StartCoroutine(GetHurt());
         if (health == 0)
         {
@@ -204,8 +196,11 @@ public class PlayerCtrl : MonoBehaviour
         }
     }
 
-    private void RayBound()
+    private void Move()
     {
+        isFly = true;
+        holdTime = 0;
+
         List<Vector2> boundPoints = new();
         List<ShakeType> shakeModeList = new();
         Vector2 start = transform.position, end = target.position;
@@ -237,7 +232,6 @@ public class PlayerCtrl : MonoBehaviour
                 normals.Add(Vector2.down);
                 currentShakes.Add(ShakeType.Vertical);
             }
-
             if (normals.Count == 0)
                 break;
 
