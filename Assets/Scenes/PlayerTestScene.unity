@@ -728,35 +728,44 @@ MonoBehaviour:
   defaultRadius: 1
   maxRadius: 6.5
   holdTime: 0
-  maxHoldTime: 10
+  maxHoldTime: 9
   radiusAddSpeedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 1
-      outSlope: 1
+      inSlope: 0.8999626
+      outSlope: 0.8999626
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.89746344
+      value: 0.8076835
+      inSlope: 1.4922088
+      outSlope: 1.4922088
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.70200396
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1
-      outSlope: 1
+      inSlope: 1.8755893
+      outSlope: 1.8755893
       tangentMode: 34
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   radiusAddPerTimes: 0.1
-  rotateSpeed: 90
+  rotateSpeed: 87
   ease: 18
-  moveTime: 0.3
+  moveTime: 0.4
   times: 1
   hitRadius: 3
   boundForce: 3
