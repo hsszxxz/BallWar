@@ -53,6 +53,7 @@ public class LevelsControl : MonoSingleton<LevelsControl>
     }
     private void ShowLevelProcess(int level)
     {
+        Generate(level);
         UIManager.Instance.GetUIWindow<UIControl>().LevelShow(level);
         StartCoroutine(CloseShowLevelNum(level));
     }
@@ -60,7 +61,6 @@ public class LevelsControl : MonoSingleton<LevelsControl>
     {
         yield return new WaitForSeconds(levelShowTime);
         UIManager.Instance.GetUIWindow<UIControl>().LevelFade();
-        Generate(level);
     }
     private void GenerateAccordingItemsConfig(ItemsConfig config)
     {
@@ -105,6 +105,7 @@ public class LevelsControl : MonoSingleton<LevelsControl>
         if (Vector2.Distance(temp.position,BasicInformation.Instance.Character.position) <=enemyDistanceToCharacter)
         {
             EnemyControl.Instance.MinusEnemyFromDictionary(temp,false);
+            GameObjectPool.Instance.CollectObject(temp.gameObject);
             return GenenrateEnemy(type, isRandom);
         }
         else
