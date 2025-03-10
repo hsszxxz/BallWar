@@ -16,6 +16,7 @@ public class LevelsControl : MonoSingleton<LevelsControl>
     public float enemyDistanceToCharacter;
     public float levelShowTime;
     private int levelIndexValue;
+    public GameObject tiShi;
     [HideInInspector]
     public int levelIndex//µ±Ç°¹Ø
     {
@@ -25,6 +26,10 @@ public class LevelsControl : MonoSingleton<LevelsControl>
         }
         set
         {
+            if (value ==2)
+            {
+                tiShi.gameObject.SetActive(false);
+            }
             levelIndexValue = value;
             ShowLevelProcess(value);
         }
