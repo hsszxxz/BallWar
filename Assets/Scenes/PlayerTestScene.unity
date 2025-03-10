@@ -763,7 +763,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   radiusAddPerTimes: 0.1
-  rotateSpeed: 87
+  rotateSpeed: 90
   ease: 18
   moveTime: 0.4
   times: 1
