@@ -338,7 +338,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000029325, y: -126}
+  m_AnchoredPosition: {x: -0.000029325, y: 241}
   m_SizeDelta: {x: 799.3842, y: 319.8246}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &198003968
@@ -354,7 +354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.46274513, g: 0.3529412, b: 0.21568629, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -374,7 +374,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u957F\u6309\u7A7A\u683C\u81F3\u53D8\u4EAE \u51FB\u6740\u852C\u83DC \n\u593A\u56DE\u5361\u8DEF\u91CC"
+  m_Text: "\u957F\u6309\u7A7A\u683C\u81F3\u3010\u53D1\u5149\u3011\n\n\u51FB\u6740\u852C\u83DC 
+    \u593A\u56DE\u5361\u8DEF\u91CC\uFF01"
 --- !u!222 &198003969
 CanvasRenderer:
   m_ObjectHideFlags: 0
