@@ -172,8 +172,11 @@ public class PlayerCtrl : MonoBehaviour
             return;
         }
 
-        if (!canHurt)
+        if (!canHurt && health > 0)
+        {
+            enemy.EnemyDie();
             return;
+        }
 
         if (isShield)
         {
@@ -188,9 +191,6 @@ public class PlayerCtrl : MonoBehaviour
                 });
             return;
         }
-
-        if (!canHurt)
-            return;
 
         health--;
         if (health > 0)
