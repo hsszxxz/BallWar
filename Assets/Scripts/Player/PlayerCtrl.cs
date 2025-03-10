@@ -40,7 +40,8 @@ public class PlayerCtrl : MonoBehaviour
     [Tooltip("左下点")] public Transform LD;
     [Tooltip("右上点")] public Transform RU;
     [Tooltip("护盾")] public GameObject shieldObject;
-    [Tooltip("状态图像")] public List<Sprite> C = new();
+    [Tooltip("角色图像")] public List<Sprite> playerTex = new();
+    [Tooltip("光照")][ColorUsage(true, true)] public Color litColor;
 
     [Header("震动")]
     [Tooltip("蓄力震动强度")] public float powerStr = 0.05f;
@@ -110,7 +111,10 @@ public class PlayerCtrl : MonoBehaviour
                 holdTime += Time.deltaTime;
                 currentRadius = radiusAddSpeedCurve.Evaluate(holdTime / maxHoldTime) * maxRadius + defaultRadius;
                 if (currentRadius - hitRadius is >= 0 and <= 0.1f)
+                {
                     CameraShake.Instance.TriggerShake(powerStr);
+                    sprite.material.SetColor("_Color", litColor);
+                }
             }
             else
             {
@@ -174,6 +178,7 @@ public class PlayerCtrl : MonoBehaviour
         if (isShield)
         {
             isShield = false;
+            enemy.EnemyDie();
             var sprite = shieldObject.GetComponent<SpriteRenderer>();
             shieldObject.transform.DOScale(10, 0.8f);
             DOTween.To((val) => { sprite.color = new Vector4(sprite.color.r, sprite.color.g, sprite.color.b, val); }, 1, 0, 0.8f)
@@ -188,9 +193,10 @@ public class PlayerCtrl : MonoBehaviour
             return;
 
         health--;
-        if (health >= 0)
+        if (health > 0)
         {
-            sprite.sprite = C[3 - health];
+            sprite.sprite = playerTex[3 - health];
+            sprite.material.SetTexture("_MainTex", sprite.sprite.texture);
         }
         enemy.EnemyDie();
         StartCoroutine(GetHurt());
@@ -264,6 +270,7 @@ public class PlayerCtrl : MonoBehaviour
         {
             isFly = false;
             currentRadius = defaultRadius;
+            sprite.material.SetColor("_Color", Color.black);
             ScoreControl.Instance.PlusScore(times - 1, transform.position, 1.8f);
             times = 1;
         });
@@ -274,16 +281,15 @@ public class PlayerCtrl : MonoBehaviour
         if (!canHurt)
             yield break;
 
-        AudioManager.Instance.PlaySoundEffect(AudioManager.Instance.Hurt);
         canHurt = false;
-        Color col = sprite.color;
+        AudioManager.Instance.PlaySoundEffect(AudioManager.Instance.Hurt);
         Sequence sequence = DOTween.Sequence();
         for (int i = 0; i < 5; i++) 
         {
-            sequence.Append(DOTween.To((val) => { sprite.color = new Vector4(col.r, col.g, col.b, val); }, 1, 0.1f, 0.15f)
+            sequence.Append(DOTween.To((val) => { sprite.material.SetVector("_Alpha", new Vector4(val, val, val, val)); }, 1, 0.1f, 0.15f)
                 .OnComplete(() =>
                 {
-                    sprite.DOFade(1, 0.15f);
+                    DOTween.To((val) => { sprite.material.SetVector("_Alpha", new Vector4(val, val, val, val)); }, 0.1f, 1f, 0.15f);
                 }).SetDelay(0.3f)
             );
         }
@@ -296,7 +302,9 @@ public class PlayerCtrl : MonoBehaviour
 
     private IEnumerator Dead()
     {
+        sprite.sortingOrder = -5;
         target.GetComponent<SpriteRenderer>().sortingOrder = -5;
+        shieldObject.transform.GetComponent<SpriteRenderer>().sortingOrder = -5;
         CameraShake.Instance.TriggerShake(deadStr, 3);
         GameObjectPool.Instance.CreateObject("deatheffection", Resources.Load("Prefab/DeathEffection") as GameObject, transform.position, Quaternion.identity).transform.GetComponent<DeathEffect>().BeginToDeath();
         yield return new WaitForSeconds(3);

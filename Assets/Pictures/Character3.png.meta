@@ -1,10 +1,7 @@
 fileFormatVersion: 2
-guid: 5ef73b97cbbdcc3468a1825834ab8dfa
+guid: 924ebba90e74fc14e9b553d6ec2ce1dd
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: -6910177410339966822
-    second: IMG_0003_0
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,52 +93,26 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IMG_0003_0
+      name: Character3_0
       rect:
         serializedVersion: 2
-        x: 109
-        y: 169
-        width: 389
-        height: 350
+        x: 110
+        y: 170
+        width: 388
+        height: 388
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a90f1c9c14e1a10a0800000000000000
-      internalID: -6910177410339966822
+      spriteID: 7f820b1dc8a36d14fa787a3d48334eac
+      internalID: 735555808
       vertices: []
       indices: 
       edges: []
@@ -157,7 +128,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      IMG_0003_0: -6910177410339966822
+      Character3_0: 735555808
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
