@@ -2,15 +2,20 @@ using UnityEngine;
 
 public class BasicInformation : MonoSingleton<BasicInformation>
 {
-    [Tooltip("整张地图x，y值最小点（最左下角的点）")]
+    [HideInInspector]
     public Transform WholeMapMinPoint;
-    [Tooltip("整张地图x，y值最大点（最右上角的点）")]
+    [HideInInspector]
     public Transform WholeMapMaxPoint;
     [Tooltip("主角")]
     public Transform Character;
+    public override void Init()
+    {
+        WholeMapMinPoint.position = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
+        WholeMapMaxPoint.position = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
+    }
     public bool isOutMap(Vector2 position)
     {
-        return position.x>WholeMapMaxPoint.position.x ||position.x< WholeMapMinPoint.position.x
-            ||position.y>WholeMapMaxPoint.position.y||position.y<WholeMapMinPoint.position.y;
+        return position.x>=WholeMapMaxPoint.position.x ||position.x<= WholeMapMinPoint.position.x
+            ||position.y>=WholeMapMaxPoint.position.y||position.y<=WholeMapMinPoint.position.y;
     }
 }
