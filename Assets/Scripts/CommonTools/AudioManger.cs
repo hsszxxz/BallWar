@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioManager : MonoSingleton<AudioManager>
@@ -8,6 +9,8 @@ public class AudioManager : MonoSingleton<AudioManager>
     public AudioClip Kill;
     public AudioClip Hurt;
     public AudioClip Peek;
+    public AudioClip Dash;
+    public List<AudioClip> Bound;
 
     public override void Init()
     {

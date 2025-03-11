@@ -296,6 +296,11 @@ MonoBehaviour:
   Kill: {fileID: 8300000, guid: 2335bc6512d831c478a77679861c5be5, type: 3}
   Hurt: {fileID: 8300000, guid: 265bf1267b1a0aa4683b75228c7f406a, type: 3}
   Peek: {fileID: 8300000, guid: 66ae0580ac335a04d8c719cafb188be2, type: 3}
+  Dash: {fileID: 8300000, guid: 3ccd97d26092bd24bb2e318973aff3bb, type: 3}
+  Bound:
+  - {fileID: 8300000, guid: 694908fc89f08354d96ce20c780b8e27, type: 3}
+  - {fileID: 8300000, guid: d79e788ab203d454e8851f0509ca097e, type: 3}
+  - {fileID: 8300000, guid: e2a453acceb9b7246b7af5d90e210079, type: 3}
 --- !u!82 &925976139
 AudioSource:
   m_ObjectHideFlags: 0

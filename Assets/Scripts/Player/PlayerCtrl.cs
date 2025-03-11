@@ -223,7 +223,7 @@ public class PlayerCtrl : MonoBehaviour
         Vector2 dir = (end - start).normalized;
 
         float e = 0.5f;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
         {
             List<Vector2> normals = new List<Vector2>();
             List<ShakeType> currentShakes = new List<ShakeType>();
@@ -261,19 +261,43 @@ public class PlayerCtrl : MonoBehaviour
             end = start + dir * boundForce;
         }
 
-        var sequence = DOTween.Sequence();
-        for (int i = 0; i < boundPoints.Count; i++)
+        if (boundPoints.Count != 0 
+            && (1 - Mathf.Abs(Vector2.Dot(dir, Vector2.right)) < 0.01f || 1 - Mathf.Abs(Vector2.Dot(dir, Vector2.up)) < 0.01f))
         {
-            sequence.Append(transform.DOMove(boundPoints[i], moveTime)
-                .OnComplete(()=>
-                {
-                    CameraShake.Instance.TriggerShake(boundStr, 0.5f,shakeModeList[i - 1]);
-                })
+            var p = boundPoints[0];
+            boundPoints.Clear();
+            boundPoints.Add(p);
+        }
+        var sequence = DOTween.Sequence();
+        AudioManager.Instance.PlaySoundEffect(AudioManager.Instance.Dash);
+        int m = 0;
+        foreach (var p in boundPoints)
+        {
+            int currentM = m;
+            sequence.Append(transform.DOMove(p, moveTime)
+            .OnComplete(() =>
+            {
+                Debug.Log(shakeModeList[currentM]);
+                CameraShake.Instance.TriggerShake(boundStr, 0.5f, shakeModeList[currentM]);
+                AudioManager.Instance.PlaySoundEffect(AudioManager.Instance.Bound[currentM]);
+            })
             ).SetEase(ease);
+            m++;
         }
         sequence.Append(transform.DOMove(end, moveTime)).SetEase(ease);
         sequence.OnComplete(() =>
         {
+            float r = 0.5f;
+            if (end.x + r < LD.x)
+                end = new Vector2(LD.x + r, end.y);
+            if (end.y + r < LD.y)
+                end = new Vector2(end.x, LD.y + r);
+            if (end.x + r > RU.x)
+                end = new Vector2(RU.x - r, end.y);
+            if (end.y + r > RU.y)
+                end = new Vector2(end.x, RU.y - r);
+            transform.DOMove(end, 0.1f).SetEase(ease);
+
             isFly = false;
             currentRadius = defaultRadius;
             sprite.material.SetColor("_Color", Color.black);
