@@ -37,8 +37,8 @@ public class PlayerCtrl : MonoBehaviour
     [Tooltip("是否有护盾")] public bool isShield;
 
     [Header("其他")]
-    [Tooltip("左下点")] public Transform LD;
-    [Tooltip("右上点")] public Transform RU;
+    [Tooltip("左下点")] public Vector3 LD;
+    [Tooltip("右上点")] public Vector3 RU;
     [Tooltip("护盾")] public GameObject shieldObject;
     [Tooltip("角色图像")] public List<Sprite> playerTex = new();
     [Tooltip("光照")][ColorUsage(true, true)] public Color litColor;
@@ -69,6 +69,12 @@ public class PlayerCtrl : MonoBehaviour
         {
             candy.CollectScore();
         }
+    }
+
+    private void Start()
+    {
+        LD = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
+        RU = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
     }
 
     void Update()
@@ -131,10 +137,10 @@ public class PlayerCtrl : MonoBehaviour
     private bool WallCheck()
     {
         Vector3 p = transform.position + (target.position - transform.position).normalized * currentRadius;
-        float l = LD.position.x;
-        float d = LD.position.y;
-        float r = RU.position.x;
-        float u = RU.position.y;
+        float l = LD.x;
+        float d = LD.y;
+        float r = RU.x;
+        float u = RU.y;
 
         if (p.x > l && p.y > d && p.x < r && p.y < u && target.position != Vector3.zero)
         {
@@ -144,10 +150,10 @@ public class PlayerCtrl : MonoBehaviour
         float e = 0f;
         //竖直
         if (p.x <= l + e || p.x >= r - e)
-            target.position = p.x >= r ? FindIntersection(new Vector2(r, d), RU.position) : FindIntersection(LD.position, new Vector2(l, u));
+            target.position = p.x >= r ? FindIntersection(new Vector2(r, d), RU) : FindIntersection(LD, new Vector2(l, u));
         //水平
         if (p.y <= d + e || p.y >= u - e)
-            target.position = p.y >= u ? FindIntersection(new Vector2(l, u), RU.position) : FindIntersection(LD.position, new Vector2(r, d));
+            target.position = p.y >= u ? FindIntersection(new Vector2(l, u), RU) : FindIntersection(LD, new Vector2(r, d));
         return true;
     }
 
@@ -222,22 +228,22 @@ public class PlayerCtrl : MonoBehaviour
             List<Vector2> normals = new List<Vector2>();
             List<ShakeType> currentShakes = new List<ShakeType>();
 
-            if (end.x <= LD.position.x + e)
+            if (end.x <= LD.x + e)
             {
                 normals.Add(Vector2.right);
                 currentShakes.Add(ShakeType.Horizontal);
             }
-            if (end.x >= RU.position.x - e)
+            if (end.x >= RU.x - e)
             {
                 normals.Add(Vector2.left);
                 currentShakes.Add(ShakeType.Horizontal);
             }
-            if (end.y <= LD.position.y + e)
+            if (end.y <= LD.y + e)
             {
                 normals.Add(Vector2.up);
                 currentShakes.Add(ShakeType.Vertical);
             }
-            if (end.y >= RU.position.y - e)
+            if (end.y >= RU.y - e)
             {
                 normals.Add(Vector2.down);
                 currentShakes.Add(ShakeType.Vertical);
